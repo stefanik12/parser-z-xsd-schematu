@@ -1,7 +1,7 @@
 #summary Rozdelenie prác
 
 
-*Rozdelenie prác*
+=*Rozdelenie prác*=
 
 
 *Michal Štefánik*,učo 422237 - testy
