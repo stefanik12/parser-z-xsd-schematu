@@ -1,0 +1,12 @@
+#summary Rozdelenie prác
+
+= Introduction =
+
+Rozdelenie prác
+
+= Details =
+
+*Michal Štefánik*,učo 422237 - testy
+*David Fatěna*,učo 374429 - tvorba XML súborov,porovnanie vypracovaného projektu a JAXB
+*Sven Relovský*,učo 409787 - trieda generujúca Java reprezentáciu XSD schémy
+*Marek Burda*,učo 410011 - trieda generujúca Parser
