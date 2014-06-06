@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!--
+Test  XML Schema for PB138 project
+@author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
+-->
+
+<xsd:schema version="1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+    <xsd:element name="company">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="person">
+                    <xsd:complexType>
+                        <xsd:all>
+                            <xsd:element name="name" type="xsd:string"/>
+                            <xsd:element name="surname" type="xsd:string"/>
+                            <xsd:element name="salary">
+                                <xsd:simpleType>
+                                    <xsd:restriction base="xsd:decimal">
+                                        <xsd:fractionDigits value="2"/>
+                                    </xsd:restriction>
+                                </xsd:simpleType>
+                            </xsd:element>
+                        </xsd:all>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:all>
+            <xsd:attribute name="name" type="xsd:string"/>
+            <xsd:attribute name="ID" type="xsd:integer"/>
+            
+        </xsd:complexType>
+    </xsd:element>
+    
+</xsd:schema>
