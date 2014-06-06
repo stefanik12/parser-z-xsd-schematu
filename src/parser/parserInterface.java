@@ -1,7 +1,11 @@
 package parser;
 
+import java.io.IOException;
 import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -9,29 +13,29 @@ import org.w3c.dom.Node;
  */
 public interface parserInterface {
     
-    void makeParser();
+    void makeParser() throws ParserConfigurationException,SAXException,IOException,XPathExpressionException;
     
-    /**Controls if the node is simple type
+    /**Checks if the node is simple type
      * 
      * @param node
      * @return True if node is simple type
      */
-    boolean isSimpleType(Node node);
+    boolean isSimpleType(Node node) throws XPathExpressionException;
     
     
-    /**Controls if the node is complex
+    /**Checks if the node is complex
      * 
      * @param node
      * @return True if node is complex type
      */
-    boolean isComplexType(Node node);
+    boolean isComplexType(Node node) throws XPathExpressionException;
     
     /**Gets attributes of the node
      * 
      * @param node
      * @return List of attributes of parameter node
      */
-    List<String> getAttributes(Node node);
+    List<String> getAttributes(Node node) throws XPathExpressionException;
     
     /**Gets under elements of node
      * 
@@ -39,4 +43,12 @@ public interface parserInterface {
      * @return List of nodes,that are under elements of parameter node
      */
     List<Node> getUnderElements(Node node);
+    
+    /***
+     * Gets type of node
+     * 
+     * @param node
+     * @return Type of node in string
+     */
+    String getType(Node node) throws XPathExpressionException;
 }
