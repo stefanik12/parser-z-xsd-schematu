@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -48,7 +50,7 @@ public class ParserTest {
             // a ziskame model dokumentu ve formatu W3C DOM
             xsdDoc = builder.parse(xsdAddress);
             schemaNode = xsdDoc.getLastChild();
-            parserInstance = new parser(xsdAddress);
+            parserInstance = new parser(new File(xsdAddress));
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             Logger.getLogger(ParserTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -56,7 +58,7 @@ public class ParserTest {
     }
 
     /**
-     * Instantiate parser, probably ???
+     * Instantiate Parser, probably ???
      */
     @Test
     public void makeParserTest() {
@@ -71,7 +73,7 @@ public class ParserTest {
      * otherwise false
      */
     @Test
-    public void isSimpleTypeTest() {
+    public void isSimpleTypeTest() throws XPathExpressionException {
         
         //test of the test:
         //System.out.println(xsdDoc.getLastChild().getChildNodes().item(1));
@@ -136,7 +138,7 @@ public class ParserTest {
      * otherwise false
      */
     @Test
-    public void isComplexTypeTest() {
+    public void isComplexTypeTest() throws XPathExpressionException {
         Node complexTypeNode;
         //subtest1 gets simpleType node and Assert Eqals       
         //explicit path to the simpleType element in "testXSD.xsd" - not working yet
@@ -195,7 +197,7 @@ public class ParserTest {
      * @return a list of attributes required for this node by XMLSchema
      */
     @Test
-    public void getAttributesTest() {
+    public void getAttributesTest() throws XPathExpressionException {
         //explicit path to the element with two parameters
         //points to <xsd:all> line 13 
         NodeList allNodes = schemaNode.getChildNodes().item(0).getChildNodes().item(0).getChildNodes();

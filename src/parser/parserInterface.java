@@ -13,9 +13,9 @@ import org.xml.sax.SAXException;
  */
 public interface parserInterface {
     
-    void makeParser() throws ParserConfigurationException,SAXException,IOException,XPathExpressionException;
+    void makeParser() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException;
     
-    /**Checks if the node is simple type
+    /**Controls if the node is simple type
      * 
      * @param node
      * @return True if node is simple type
@@ -23,19 +23,19 @@ public interface parserInterface {
     boolean isSimpleType(Node node) throws XPathExpressionException;
     
     
-    /**Checks if the node is complex
+    /**Controls if the node is complex
      * 
      * @param node
      * @return True if node is complex type
      */
-    boolean isComplexType(Node node) throws XPathExpressionException;
+    boolean isComplexType(Node node)  throws XPathExpressionException;
     
     /**Gets attributes of the node
      * 
      * @param node
      * @return List of attributes of parameter node
      */
-    List<String> getAttributes(Node node) throws XPathExpressionException;
+    List<String> getAttributes(Node node)  throws XPathExpressionException;
     
     /**Gets under elements of node
      * 
@@ -44,11 +44,12 @@ public interface parserInterface {
      */
     List<Node> getUnderElements(Node node);
     
-    /***
-     * Gets type of node
-     * 
+    /**
+     *
      * @param node
-     * @return Type of node in string
+     * @return ???
+     * @throws XPathExpressionException
      */
     String getType(Node node) throws XPathExpressionException;
+    
 }
