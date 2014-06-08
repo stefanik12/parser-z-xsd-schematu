@@ -1,5 +1,9 @@
 Projekt bude obsahovať triedy parser,binder,unit testy a porovnanie riešenia JAXP (ktoré používame) a JAXB.
+
 Trieda binder vytvorí javovské metódy a premenné podla atribútov a uzlov XSD schémy,na ktoré nadviaže parser.
+
 Trieda parser vytvorí samostatný javovský súbor, v ktorom bude vygenerovaný parser pre konkrétnu XSD schému.
+
 Unit testy budú spravené pre obe triedy a budú kontrolovať všetky metódy.
+
 Súbory generované našim programom sa budú ukladať do zložky generatedFiles/"názov XSD schémy"parser.java
