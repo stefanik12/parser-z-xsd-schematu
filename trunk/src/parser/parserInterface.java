@@ -47,7 +47,7 @@ public interface parserInterface {
     /**
      *
      * @param node
-     * @return ???
+     * @return type of the content (?)
      * @throws XPathExpressionException
      */
     String getType(Node node) throws XPathExpressionException;
