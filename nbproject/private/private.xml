@@ -5,9 +5,9 @@
         <group>
             <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/test/ParserTest.java</file>
             <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/testXSD.xsd</file>
+            <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/parserInterface.java</file>
+            <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/parser.java</file>
             <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/testXML.xml</file>
-            <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/ParserInterface.java</file>
-            <file>file:/D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/parser/Parser.java</file>
         </group>
     </open-files>
 </project-private>

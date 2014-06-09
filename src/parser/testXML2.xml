@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<company
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:noNamespaceSchemaLocation='testXSD.xsd'>
+    <person name="Adam" ID="1">
+        <position>Programmer </position>
+        <salary>10000</salary>
+    </person>
+    <person name="Peter" ID="2">
+        <position>Cleaner </position>
+        <salary>20000</salary>
+    </person>
+</company>
