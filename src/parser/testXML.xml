@@ -9,9 +9,14 @@ and open the template in the editor.
 <company
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='testXSD.xsd'>
-    <name>
-        
-    </name>
-    <surname></surname>
+    <person>
+        <name>
+        Name  
+        </name>
+        <surname>Surname</surname>
+        <salary>
+            1500.00
+        </salary>
+    </person>
 
 </company>
