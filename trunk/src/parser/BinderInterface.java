@@ -20,7 +20,7 @@ public interface BinderInterface {
      * @param converted is type in XML format(xsd?) 
      * @return datatype in String
      */
-    String  convertType(String converted);
+    String  convertType(String convert);
     
     /**
      * opens new Buffered reader  and creates BinderFile class
