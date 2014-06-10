@@ -15,7 +15,8 @@ public interface BinderInterface {
     
     /**
      * 
-     * for all number types should return double and for all other types String
+     * for all number types should return double and string type to String
+     * other types are recognized as non-simpletype objects(?)
      * 
      * @param converted is type in XML format(xsd?) 
      * @return datatype in String
