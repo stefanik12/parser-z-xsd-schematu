@@ -21,13 +21,16 @@ import org.xml.sax.SAXException;
  *
  * @author Sven Relovsky
  */
-public class Binder {
+public class Binder implements BinderInterface{
     private Document doc;
     private XPath xpath;
     
     /**
     * Constructor creating an instance of this class of given URI
      * @param uri
+     * @throws javax.xml.parsers.ParserConfigurationException
+     * @throws org.xml.sax.SAXException
+     * @throws java.io.IOException
     */
     public Binder(URI uri) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory domFac = DocumentBuilderFactory.newInstance();
@@ -39,6 +42,26 @@ public class Binder {
         xpath = factory.newXPath();
                
         
+    }
+
+    @Override
+    public String convertType(String converted) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void complexToClass() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void simpleToVar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     
