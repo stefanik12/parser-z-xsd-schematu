@@ -30,15 +30,16 @@ import parser.parser;
  * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
 public class ParserTest {
-    private String prefix =  "src/parser/";
-    
+
+    private String prefix = "src/parser/";
+
     private Document xsdDoc;
     private final String xsdAddress = "testXSD.xsd";
     private Node schemaNode;
 
     private Document xmlDoc;
     private final String xmlAddress = "testXML2.xml";
-    private File xmlFile, brokenXmlFile;
+    private File xmlFile, brokenXsdFile, xsdFile;
 
     private parser parserInstance;
 
@@ -52,14 +53,14 @@ public class ParserTest {
             // DocumentBuilder pouzijeme pro zpracovani XML dokumentu
             // a ziskame model dokumentu ve formatu W3C DOM
 
-            xsdDoc = builder.parse(prefix+xsdAddress);
-            schemaNode = xsdDoc.getLastChild();
+            xsdDoc = builder.parse(prefix + xsdAddress);
+            xsdFile = new File(prefix + xsdAddress);
+            parserInstance = new parser(xsdFile);
 
-            xmlFile = new File(prefix+xmlAddress);
+            xmlFile = new File(prefix + xmlAddress);
             xmlDoc = builder.parse(xmlFile);
-            parserInstance = new parser(xmlFile);
             
-            brokenXmlFile = new File(prefix+"broken.xml");
+            brokenXsdFile = new File(prefix + "broken.xsd");
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             Logger.getLogger(ParserTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,24 +76,32 @@ public class ParserTest {
         //vytvor parser, assertuj, ze vznikol subor generatedFiles. Ak nevznikol, assertuj, ze bola vyhodena vynimka
         parser testParser;
         boolean err = false;
+        testParser = new parser(xmlFile);
         try {
-            testParser = new parser(xmlFile);
-        } catch (Exception e) {
+            testParser.makeParser();
+        } catch (IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
             err = true;
             assertFalse(e.getMessage(), true);
+        } catch (Exception e){
+            assertFalse("Exception thrown for valid document: "+e.toString(), true);
         }
-        if(! new File(prefix+"generatedFiles").exists()){
-            assertTrue(true);
-            //zatial neprejde : moze byt len zla cesta - overit 
+        if (!new File(prefix + "generatedFiles").exists()) {
+            //OK
         } else {
             assertFalse(err);
         }
-        testParser = null;
+
         //part 2:
         //vytvor parser s chybnym vstupom, assertuj vyhodenie IOException
         // TO DO
-        testParser = new parser(xmlFile);
-        
+        testParser = new parser(brokenXsdFile);
+        try {
+            testParser.makeParser();
+        } catch (IOException e){
+            //OK
+        } catch (ParserConfigurationException | SAXException | XPathExpressionException e) {
+            assertFalse("IOException expected here", true);
+        }
     }
 
     /**
@@ -106,28 +115,12 @@ public class ParserTest {
     public void isSimpleTypeTest() {
 
         Node simpleTypeNode;
-        //subtest1: IS simple type.     
-        simpleTypeNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
-        //points to <position>Programmer </position>
-
-        NodeList simpleTypeList = simpleTypeNode.getChildNodes();
-
-        boolean expected = true;
+        boolean expected;
         boolean actual;
-        try {
-            actual = parserInstance.isSimpleType(simpleTypeNode);
-        } catch (XPathExpressionException e) {
-            actual = false;
-            //node is valid though an exception raised
-            assertFalse(e.getMessage(), expected);
-        }
-
-        //assertion
-        assertEquals(expected, actual);
-
-        //subtest2: IS NOT simple type.
-        simpleTypeNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(3);
-        //points to  <person name="Peter" ID="2"> 
+        //subtest1: IS NOT simple type.
+        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        //points to   <xsd:element name="person">
 
         expected = false;
         try {
@@ -139,6 +132,43 @@ public class ParserTest {
         }
         //assertion
         assertEquals(actual, expected);
+
+        //subtest2: IS simple type.     
+        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1);
+        //points to                           <xsd:element name="position" type="xsd:string"/>
+
+        expected = true;
+        try {
+            actual = parserInstance.isSimpleType(simpleTypeNode);
+        } catch (XPathExpressionException e) {
+            actual = false;
+            //node is valid though an exception raised
+            assertFalse(e.getMessage(), expected);
+        }
+
+        //assertion
+        assertEquals(expected, actual);
+
+        //subtest 3: IS simple type - nested.
+        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(3);
+        //points to                           <xsd:element name="salary">
+
+        expected = true;
+        try {
+            actual = parserInstance.isSimpleType(simpleTypeNode);
+        } catch (XPathExpressionException e) {
+            actual = false;
+            //node is valid though an exception raised
+            assertFalse(e.getMessage(), expected);
+        }
+
+        //assertion
+        assertEquals(expected, actual);
+
     }
 
     /**
@@ -152,8 +182,10 @@ public class ParserTest {
     public void isComplexTypeTest() throws XPathExpressionException {
         Node complexTypeNode;
         ///subtest1: IS complex type.
-        complexTypeNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(1);
-        //points to  <person name="Peter" ID="2"> 
+        complexTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        //points to  <xsd:element name="person">
+
         boolean expected = true;
         boolean actual;
         try {
@@ -161,22 +193,23 @@ public class ParserTest {
         } catch (XPathExpressionException e) {
             actual = false;
             //node is valid though an exception raised
-            assertFalse(e.getMessage(), expected);
+            assertFalse(e.getMessage(), actual);
         }
         //assertion
         assertEquals(actual, expected);
 
         //subtest2: IS NOT complex type
-        complexTypeNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
-        //points to <position>Programmer </position>
-
+        complexTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1);
+        //points to <xsd:element name="position" type="xsd:string"/>
+        
         expected = false;
         try {
             actual = parserInstance.isComplexType(complexTypeNode);
         } catch (XPathExpressionException e) {
             actual = true;
             //node is valid though an exception raised
-            assertFalse(e.getMessage(), expected);
+            assertFalse(e.getMessage(), actual);
         }
 
         //assertion
@@ -191,20 +224,28 @@ public class ParserTest {
      */
     @Test
     public void getAttributesTest() throws XPathExpressionException {
-        Node relatedNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(1);
-        //refers to:     <person name="Adam" ID="1">
+        Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        //points to:     <xsd:element name="person">
         
-        NamedNodeMap attributes = relatedNode.getAttributes();
+        List<String> expected = new ArrayList<>();
+        
+        expected.add(xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(3)
+                    .getAttributes().getNamedItem("name").getNodeValue());
+        //points to                         <xsd:attribute name="name" type="xsd:string"/>
+        expected.add(xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(5)
+                    .getAttributes().getNamedItem("name").getNodeValue());
+        //points to                         <xsd:attribute name="ID" type="xsd:integer"/>
 
-        List<String> values = new ArrayList<>();
-        for (int i = 0; i < attributes.getLength(); i++) {
-            values.add(attributes.item(i).getNodeValue());
-        }
         List<String> actual = parserInstance.getAttributes(relatedNode);
         //size assertion
-        assertEquals(attributes.getLength(), actual.size());
+        assertEquals(expected.size(), actual.size());
         //values assertion
-        assertDeepEqualsNotSorted2(values, actual);
+        assertDeepEqualsNotSorted2(expected, actual);
     }
 
     /**
@@ -215,17 +256,20 @@ public class ParserTest {
      */
     @Test
     public void getUnderElementsTest() {
-        Node relatedNode = xmlDoc.getChildNodes().item(1).getChildNodes().item(3);
-        //refers to:     <person name="Peter" ID="2">
+        Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        //points to:     <xsd:element name="person">
         
         List<Node> expected = new ArrayList<>();
-        for (int i = 1; i <= relatedNode.getChildNodes().getLength() / 2; i++) {
-            // pri iteracii sa na parnych poziciach nachadzaju prazdne uzly (?)
-            expected.add(relatedNode.getChildNodes().item(i));
-        }
-        System.out.println(relatedNode);
-        List<Node> actual = parserInstance.getUnderElements(relatedNode);
+        
+        expected.add(relatedNode.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1));
+        //points to:                             <xsd:element name="position" type="xsd:string"/>
 
+        expected.add(relatedNode.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(3));
+        //points to:                            <xsd:element name="salary">
+
+        List<Node> actual = parserInstance.getUnderElements(relatedNode);
+        
         //length comparision 
         assertEquals(expected.size(), actual.size());
 
@@ -239,7 +283,7 @@ public class ParserTest {
         for (Node n : expected) {
             boolean nameFound = false;
             boolean valueFound = false;
-            //considered values:
+            //considered expected:
             String name = n.getNodeName();
             String value = n.getNodeValue();
 
@@ -264,7 +308,7 @@ public class ParserTest {
         for (String s : expected) {
             boolean valueFound = false;
 
-            //considered values:
+            //considered expected:
             for (String s2 : actual) {
                 if (s2.equals(s)) {
                     valueFound = true;
