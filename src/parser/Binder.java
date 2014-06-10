@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 public class Binder implements BinderInterface{
     private Document doc;
     private XPath xpath;
-    
+    String prefix;
     /**
     * Constructor creating an instance of this class of given URI
      * @param uri
@@ -40,18 +40,48 @@ public class Binder implements BinderInterface{
         
         XPathFactory factory = XPathFactory.newInstance();
         xpath = factory.newXPath();
+        
+        prefix="xsd";//for now only xsd is implemented 
                
         
     }
 
     @Override
-    public String convertType(String converted) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String convertType(String convert) {
+               
+        /* 
+            if numric returns double
+           source http://www.w3schools.com/schema/schema_dtypes_numeric.asp
+        */
+        if(convert.equals(prefix+":byte") || convert.equals(prefix+":decimal")
+                || convert.equals(prefix+":int") 
+                || convert.equals(prefix+":nonNegativeInteger") 
+                || convert.equals(prefix+":nonPositiveInteger") 
+                || convert.equals(prefix+":long") 
+                || convert.equals(prefix+":negativeInteger") 
+                || convert.equals(prefix+":short") 
+                || convert.equals(prefix+":unsignedLong") 
+                || convert.equals(prefix+":unsignedInt") 
+                || convert.equals(prefix+":unsignedShort") 
+                || convert.equals(prefix+":unsignedByte")
+           ){
+            return "double";
+        }
+        else{
+            if(convert.equals(prefix+":string")){
+                return "String";
+            }
+            else{
+            return convert;
+            }
+            }            
+        }
+        
     }
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
