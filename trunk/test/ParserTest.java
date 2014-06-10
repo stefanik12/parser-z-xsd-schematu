@@ -50,7 +50,7 @@ public class ParserTest {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             // Pomoci tovarni tridy ziskame instanci DocumentBuilderu
             DocumentBuilder builder = factory.newDocumentBuilder();
-            // DocumentBuilder pouzijeme pro zpracovani XML dokumentu
+            // DocumentBuilder pouzijeme pro zpracovani XSD dokumentu
             // a ziskame model dokumentu ve formatu W3C DOM
 
             xsdDoc = builder.parse(prefix + xsdAddress);
@@ -59,7 +59,7 @@ public class ParserTest {
 
             xmlFile = new File(prefix + xmlAddress);
             xmlDoc = builder.parse(xmlFile);
-            
+
             brokenXsdFile = new File(prefix + "broken.xsd");
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
@@ -82,8 +82,8 @@ public class ParserTest {
         } catch (IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
             err = true;
             assertFalse(e.getMessage(), true);
-        } catch (Exception e){
-            assertFalse("Exception thrown for valid document: "+e.toString(), true);
+        } catch (Exception e) {
+            assertFalse("Exception thrown for valid document: " + e.toString(), true);
         }
         if (!new File(prefix + "generatedFiles").exists()) {
             //OK
@@ -97,7 +97,7 @@ public class ParserTest {
         testParser = new parser(brokenXsdFile);
         try {
             testParser.makeParser();
-        } catch (IOException e){
+        } catch (IOException e) {
             //OK
         } catch (ParserConfigurationException | SAXException | XPathExpressionException e) {
             assertFalse("IOException expected here", true);
@@ -107,8 +107,8 @@ public class ParserTest {
     /**
      * Javadoc for expected verified method: Controls if the node is simpleType
      *
-     * @param node : ''element'' node from XML document
-     * @return True if the node is restricted as simple by the XML Schema,
+     * @param node : ''element'' node from XSD document
+     * @return True if the node is restricted as simple by the XSD Schema,
      * otherwise false
      */
     @Test
@@ -174,8 +174,8 @@ public class ParserTest {
     /**
      * Javadoc for expected verified method: Controls if the node is complexType
      *
-     * @param node : '''element'' node from XML document
-     * @return True if the node is restricted as complex by the XML Schema,
+     * @param node : '''element'' node from XSD document
+     * @return True if the node is restricted as complex by the XSD Schema,
      * otherwise false
      */
     @Test
@@ -202,7 +202,7 @@ public class ParserTest {
         complexTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
                     .getChildNodes().item(1).getChildNodes().item(1);
         //points to <xsd:element name="position" type="xsd:string"/>
-        
+
         expected = false;
         try {
             actual = parserInstance.isComplexType(complexTypeNode);
@@ -219,17 +219,17 @@ public class ParserTest {
     /**
      * Javadoc for expected verified method:
      *
-     * @param node : the ''element'' of XML document and
-     * @return a list of attributes required for this node by XMLSchema
+     * @param node : the ''element'' of XSD document and
+     * @return a list of attributes required for this node by XSDSchema
      */
     @Test
     public void getAttributesTest() throws XPathExpressionException {
         Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
                     .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
         //points to:     <xsd:element name="person">
-        
+
         List<String> expected = new ArrayList<>();
-        
+
         expected.add(xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
                     .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
                     .getChildNodes().item(1).getChildNodes().item(3)
@@ -259,9 +259,9 @@ public class ParserTest {
         Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
                     .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
         //points to:     <xsd:element name="person">
-        
+
         List<Node> expected = new ArrayList<>();
-        
+
         expected.add(relatedNode.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1));
         //points to:                             <xsd:element name="position" type="xsd:string"/>
 
@@ -269,11 +269,50 @@ public class ParserTest {
         //points to:                            <xsd:element name="salary">
 
         List<Node> actual = parserInstance.getUnderElements(relatedNode);
-        
+
         //length comparision 
         assertEquals(expected.size(), actual.size());
 
         assertDeepEqualsNotSorted(expected, actual);
+    }
+
+    /**
+     * @param node
+     * @return type of the content (?)
+     * @throws XPathExpressionException
+     */
+    @Test
+    public void getTypeTest() {
+        Node relatedNode;
+        String expected, actual = "init";
+        //subtest 1: type "xsd:string"
+        relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        //points to:                             <xsd:element name="position" type="xsd:string"/>
+        expected = "xsd:string";
+        try {
+            actual = parserInstance.getType(relatedNode);
+        } catch (XPathExpressionException e) {
+            assertFalse("Valid node has thrown exception", true);
+        }
+        //assertion
+        assertEquals(expected, actual);
+        
+        //subtest 2: type "xsd:decimal" - nested restriction
+        relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
+                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(3);
+        //points to:                             <xsd:element name="salary">
+        expected = "xsd:decimal";
+        try {
+            actual = parserInstance.getType(relatedNode);
+        } catch (XPathExpressionException e) {
+            System.out.println("here we are");
+        }
+        //assertion
+        assertEquals(expected, actual);
+        
     }
 
     private void assertDeepEqualsNotSorted(List<Node> expected, List<Node> actual) {
