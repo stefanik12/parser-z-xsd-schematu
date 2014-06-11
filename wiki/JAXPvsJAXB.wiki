@@ -32,8 +32,10 @@ Silná stránka JAXP je flexibilita. Umožňuje použití libovolného parseru k
 
 *JAXB* (výslovnost _|ˈdʒæksbiː|_) je zkratka pro _Java Architecture for XML Binding_. Slouží k serializování Java objektů na XML a opačně, a tím umožňuje uložení a opětovné získání dat z paměti v jakémkoli XML formátu bez nutnosti implementovat specifické struktury pro načítání a ukládání XML. 
 
+Při *procesu svazování* JAXB vygeneruje a zkompiluje JAXB třídy ze zdrojového schématu a sestaví aplikací, která tyto třídy implementuje. Poté spustí aplikaci na rozřazení, použití, schválení a seřazení XML obsahu pomocí JAXB svazujícícho rámce.
 
-*Proces svázání*
+
+*Proces svázání po krocích*
 
  * *1. generování tříd* - XML schéma je použito jako vstup pro JAXB kompilátor, generují se JAXB třídy založeny na tomto schématu
  * *2. kompilování tříd* - všechny generované třídy, zdrojové soubory a kódy musí být zkompilovány
@@ -50,3 +52,5 @@ http://docs.oracle.com/javase/tutorial/figures/jaxb/jaxb-dataBindingProcess.gif
 
 
 = Rozdíly mezi JAXP a JAXB =
+
+TBD
