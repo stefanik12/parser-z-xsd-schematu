@@ -44,6 +44,8 @@ Silná stránka JAXP je flexibilita. Umožňuje použití libovolného parseru k
  * *7. serializace* - zpracovaný obsahový strom je serializován do jednoho nebo více XML dokumentů
 
 
+http://docs.oracle.com/javase/tutorial/figures/jaxb/jaxb-dataBindingProcess.gif
+
 
 
 
