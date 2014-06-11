@@ -1,0 +1,35 @@
+#summary Specifikace a rozdíly mezi JAXP a JAXB
+
+XML a Java jsou nejlepší stavební kameny pro tvorbu webových služeb a webových aplikací využívající webové služby. Java API (_Java Application Programming Interface_) nazývány JAXP a JAXB pomáhají přistupovat k XML dokumentům aplikacím napsaných v programovacím jazyce Java.
+
+
+
+= JAXP =
+
+*JAXP* (výslovnost _|ˈdʒækspiː|_) je zkratka pro _Java API for XML Processing_. Slouží ke zpracování XML dat za použití JAVA aplikací. 
+
+
+Využívá parsovací standardy
+
+ * *SAX* (_Simple API for XML Parsing_) - parsuje data jako proud událostí
+ * *DOM* (_Document Object Model_) - parsuje data jako objekt
+
+
+Dále podporuje 
+
+ * *XSLT standard* (_Extensible Stylesheet Language Transformations_) pro lepší kontrolu reprezentace dat a zároveň umožňuje transformovat data do jiných XML dokumentů nebo jiných formátů, jako např. HTML.
+ * *namespace* - podporuje práci s DTD, které by za různých okolností měly konflikty jmen.
+ * *StAX* (_Streaming API for XML_) - od verze 1.4
+
+
+Silná stránka JAXP je flexibilita. Umožňuje použití libovolného parseru kompatibilního s XML uvnitř aplikace za použití tzv. nástavbové vrstvy, která umožňuje implementaci SAX nebo DOM API nebo dokonce XSL procesoru pro lepší kontrolu vzhledu XML dat.
+
+
+
+
+
+= JAXB =
+
+
+= Rozdíly mezi JAXP a JAXB =
+
