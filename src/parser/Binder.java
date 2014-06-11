@@ -15,6 +15,12 @@ import javax.xml.xpath.*;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -25,6 +31,10 @@ public class Binder implements BinderInterface{
     private Document doc;
     private XPath xpath;
     String prefix;
+    String classString;
+    private ArrayList<String> classNameList = new ArrayList<String>();
+    
+    
     /**
     * Constructor creating an instance of this class of given URI
      * @param uri
@@ -37,6 +47,7 @@ public class Binder implements BinderInterface{
         domFac.setNamespaceAware(true);
         DocumentBuilder builder = domFac.newDocumentBuilder();
         doc = builder.parse(uri.toString());
+        
         
         XPathFactory factory = XPathFactory.newInstance();
         xpath = factory.newXPath();
@@ -77,20 +88,105 @@ public class Binder implements BinderInterface{
             }            
         }
         
-    }
+    
 
     @Override
-    public void run() {
+    public void run() throws IOException{
+        
+        prefix = doc.getDocumentElement().getPrefix();
+        
+        new File("/generatedFiles").mkdir();
+        File generatedClasses = new File("generatedFiles/generatedClasses.java");
+        BufferedWriter classWriter = new BufferedWriter(new FileWriter(generatedClasses));
+        
+        classString = ("package generatedFiles;"
+                + "/**\n"
+                + "*contains java class creating"
+                + "*for each element of schema"
+                + "*/"
+                + "public class GeneratedClasses{\n\t");
+        
+        //run
+        analyse("/"+prefix+":schema","",classWriter);
+        
+        classString+=("\n}");
+         classWriter.write(classString);
+         classWriter.close();      
+               
         
     }
-
     @Override
-    public void complexToClass() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void analyse(String path, String parentalNodes, BufferedWriter writer)
+            throws IOException{
+        boolean a = true;
+        String newParents = parentalNodes;
+        NodeList nodes = null;
+        String newPath;
+        
+        
+        //This will require further processing of siblings
+        newPath = path + "/" + prefix + ":complexType[@name]";
+        
+        try {
+        XPathExpression expr = xpath.compile(path);
+        Object result = expr.evaluate(doc, XPathConstants.NODESET);
+        nodes = (NodeList) result;
+        } catch (XPathExpressionException ex) {
+        Logger.getLogger(Binder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if(nodes==null){                
+        //This will create complextype just for one element
+        newPath = path + "/" + prefix + ":element[@name and " + prefix +
+                "complexType]";
+                
+        try {
+        XPathExpression expr = xpath.compile(path);
+        Object result = expr.evaluate(doc, XPathConstants.NODESET);
+        nodes= (NodeList) result;
+        a = false;
+        } catch (XPathExpressionException ex) {
+        Logger.getLogger(Binder.class.getName()).log(Level.SEVERE, null, ex);
+        }    
+        }
+        if(nodes!=null){
+            for(int i=0;i<nodes.getLength();i++){
+                if(nodes.item(i) instanceof Element){
+                    Element el = (Element) nodes.item(i);
+                    String nameAttr = el.getAttribute(path);
+                    
+                    //possible name conflict
+                    
+                    
+                    
+                    classNameList.add(nameAttr);
+                    if(a){
+                        
+                    }
+                    
+                    writer.write("}\n\n");
+                    if(parentalNodes.isEmpty()){
+                    writer.close();
+                    }
+                    
+                    
+                }                    
+            }
+        }
+    }
+    
+    
+    @Override
+    public void complexToClass(String className,String parentNames) {
+        
+    }
+    
+    public void createAttributes(String path, BufferedWriter writer, boolean att, String parentNames){
+    
     }
 
     @Override
-    public void simpleToVar() {
+    public void  createFactoryMethod(String className,String parentNames){
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
