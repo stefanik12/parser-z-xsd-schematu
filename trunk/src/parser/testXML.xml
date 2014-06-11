@@ -10,13 +10,9 @@ and open the template in the editor.
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='testXSD.xsd'>
     <person>
-        <name>
-        Name  
-        </name>
+        <name>Name</name>
         <surname>Surname</surname>
-        <salary>
-            1500.00
-        </salary>
+        <salary>1500.00</salary>
     </person>
 
 </company>
