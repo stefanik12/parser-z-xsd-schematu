@@ -30,7 +30,7 @@ Silná stránka JAXP je flexibilita. Umožňuje použití libovolného parseru k
 
 = JAXB =
 
-*JAXP* (výslovnost _|ˈdʒæksbiː|_) je zkratka pro _Java Architecture for XML Binding_. Slouží k serializování Java objektů na XML a opačně, a tím umožňuje uložení a opětovné získání dat z paměti v jakémkoli XML formátu bez nutnosti implementovat specifické struktury pro načítání a ukládání XML. 
+*JAXB* (výslovnost _|ˈdʒæksbiː|_) je zkratka pro _Java Architecture for XML Binding_. Slouží k serializování Java objektů na XML a opačně, a tím umožňuje uložení a opětovné získání dat z paměti v jakémkoli XML formátu bez nutnosti implementovat specifické struktury pro načítání a ukládání XML. 
 
 
 = Rozdíly mezi JAXP a JAXB =
