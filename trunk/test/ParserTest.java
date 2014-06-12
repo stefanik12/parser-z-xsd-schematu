@@ -27,7 +27,6 @@ import org.xml.sax.SAXException;
 import parser.parser;
 
 /**
- * TO DO: Testy zatial neukazuju na ziadane uzly
  *
  * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
@@ -77,7 +76,7 @@ public class ParserTest {
     }
 
     /**
-     * Instantiate Parser, probably ???
+     * Instantiate Parser
      */
     @Test
     public void makeParserTest() {
@@ -101,7 +100,7 @@ public class ParserTest {
         }
 
         //part 2:
-        //vytvor parser s chybnym vstupom, assertuj vyhodenie IOException
+        //vytvor parser s chybnym vstupom (nedokonceny uzol), assertuj vyhodenie IOException
         // TO DO
         testParser = new parser(brokenXsdFile);
         try {
@@ -119,6 +118,7 @@ public class ParserTest {
      * @param node : ''element'' node from XSD document
      * @return True if the node is restricted as simple by the XSD Schema,
      * otherwise false
+     * @throws javax.xml.xpath.XPathExpressionException if evaluation fails
      */
     @Test
     public void isSimpleTypeTest() throws XPathExpressionException {
@@ -185,6 +185,7 @@ public class ParserTest {
      * @param node : '''element'' node from XSD document
      * @return True if the node is restricted as complex by the XSD Schema,
      * otherwise false
+     * @throws javax.xml.xpath.XPathExpressionException if evaluation fails
      */
     @Test
     public void isComplexTypeTest() throws XPathExpressionException {
@@ -262,6 +263,7 @@ public class ParserTest {
      *
      * @param node
      * @return List of nodes,that are under elements of parameter node
+     * @throws javax.xml.xpath.XPathExpressionException if evaluation fails
      */
     @Test
     public void getUnderElementsTest() throws XPathExpressionException {
@@ -295,7 +297,7 @@ public class ParserTest {
     /**
      * @param node
      * @return type of the content (?)
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException if evaluation fails
      */
     @Test
     public void getTypeTest() throws XPathExpressionException {
