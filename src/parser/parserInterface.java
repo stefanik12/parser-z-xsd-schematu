@@ -45,7 +45,7 @@ public interface parserInterface {
      * @param node
      * @return List of nodes,that are under elements of parameter node
      */
-    List<Node> getUnderElements(Node node);
+    List<Node> getUnderElements(Node node) throws XPathExpressionException;
     
     /**Method getType returns type of node as string
      *
@@ -57,7 +57,7 @@ public interface parserInterface {
     
     /**
      Method will append new method for parsing input node to the string,that will
-     * later 
+     * later fill variables with xml datas.
      * @param node Node for which will method be created
      * @param str String to which will created method append
      * @return String with appended method
