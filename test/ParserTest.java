@@ -13,14 +13,16 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import parser.parser;
 
@@ -36,12 +38,15 @@ public class ParserTest {
     private Document xsdDoc;
     private final String xsdAddress = "testXSD.xsd";
     private Node schemaNode;
+    InputSource xsdIS;
 
     private Document xmlDoc;
     private final String xmlAddress = "testXML2.xml";
     private File xmlFile, brokenXsdFile, xsdFile;
 
     private parser parserInstance;
+
+    XPath xpath;
 
     @Before
     public void setUp() {
@@ -61,6 +66,10 @@ public class ParserTest {
             xmlDoc = builder.parse(xmlFile);
 
             brokenXsdFile = new File(prefix + "broken.xsd");
+
+            //XPath intialisation block 
+            xpath = XPathFactory.newInstance().newXPath();
+            xsdIS = new InputSource(prefix + xsdAddress);
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             Logger.getLogger(ParserTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,14 +121,15 @@ public class ParserTest {
      * otherwise false
      */
     @Test
-    public void isSimpleTypeTest() {
+    public void isSimpleTypeTest() throws XPathExpressionException {
 
         Node simpleTypeNode;
         boolean expected;
         boolean actual;
+        String xPath;
         //subtest1: IS NOT simple type.
-        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        xPath = "/descendant::*[local-name()='element'][2]";
+        simpleTypeNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to   <xsd:element name="person">
 
         expected = false;
@@ -134,9 +144,8 @@ public class ParserTest {
         assertEquals(actual, expected);
 
         //subtest2: IS simple type.     
-        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1);
+        xPath = "/descendant::*[local-name()='element'][3]";
+        simpleTypeNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to                           <xsd:element name="position" type="xsd:string"/>
 
         expected = true;
@@ -152,9 +161,8 @@ public class ParserTest {
         assertEquals(expected, actual);
 
         //subtest 3: IS simple type - nested.
-        simpleTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(3);
+        xPath = "/descendant::*[local-name()='element'][4]";
+        simpleTypeNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to                           <xsd:element name="salary">
 
         expected = true;
@@ -181,9 +189,10 @@ public class ParserTest {
     @Test
     public void isComplexTypeTest() throws XPathExpressionException {
         Node complexTypeNode;
+        String xPath;
         ///subtest1: IS complex type.
-        complexTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        xPath = "/descendant::*[local-name()='element'][2]";
+        complexTypeNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to  <xsd:element name="person">
 
         boolean expected = true;
@@ -199,8 +208,8 @@ public class ParserTest {
         assertEquals(actual, expected);
 
         //subtest2: IS NOT complex type
-        complexTypeNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1);
+        xPath = "/descendant::*[local-name()='element'][3]";
+        complexTypeNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to <xsd:element name="position" type="xsd:string"/>
 
         expected = false;
@@ -221,25 +230,25 @@ public class ParserTest {
      *
      * @param node : the ''element'' of XSD document and
      * @return a list of attributes required for this node by XSDSchema
+     * @throws javax.xml.xpath.XPathExpressionException if evaluation fails
      */
     @Test
     public void getAttributesTest() throws XPathExpressionException {
-        Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        String xPath = "/descendant::*[local-name()='element'][2]";
+        Node relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:     <xsd:element name="person">
 
         List<String> expected = new ArrayList<>();
 
-        expected.add(xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(3)
-                    .getAttributes().getNamedItem("name").getNodeValue());
+        xPath = "/descendant::*[local-name()='attribute'][1]/@name";
+        String value = ((String) xpath.evaluate(xPath, relatedNode, XPathConstants.STRING));
         //points to                         <xsd:attribute name="name" type="xsd:string"/>
-        expected.add(xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(5)
-                    .getAttributes().getNamedItem("name").getNodeValue());
+        expected.add(value);
+
+        xPath = "/descendant::*[local-name()='attribute'][2]/@name";
+        value = ((String) xpath.evaluate(xPath, relatedNode, XPathConstants.STRING));
         //points to                         <xsd:attribute name="ID" type="xsd:integer"/>
+        expected.add(value);
 
         List<String> actual = parserInstance.getAttributes(relatedNode);
         //size assertion
@@ -255,20 +264,27 @@ public class ParserTest {
      * @return List of nodes,that are under elements of parameter node
      */
     @Test
-    public void getUnderElementsTest() {
-        Node relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+    public void getUnderElementsTest() throws XPathExpressionException {
+        String xPath = "/descendant::*[local-name()='element'][2]";
+        Node relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:     <xsd:element name="person">
 
         List<Node> expected = new ArrayList<>();
-
-        expected.add(relatedNode.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1));
+        
+        xPath = "/descendant::*[local-name()='element'][1]";
+        expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
         //points to:                             <xsd:element name="position" type="xsd:string"/>
-
-        expected.add(relatedNode.getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(3));
+        
+        xPath = "/descendant::*[local-name()='element'][2]";
+        expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
         //points to:                            <xsd:element name="salary">
 
-        List<Node> actual = parserInstance.getUnderElements(relatedNode);
+        List<Node> actual = new ArrayList<>();
+        try {
+            actual = parserInstance.getUnderElements(relatedNode);
+        } catch (XPathExpressionException e) {
+            assertFalse("Exception for a valid node was thrown: " + e.toString(), true);
+        }
 
         //length comparision 
         assertEquals(expected.size(), actual.size());
@@ -282,13 +298,12 @@ public class ParserTest {
      * @throws XPathExpressionException
      */
     @Test
-    public void getTypeTest() {
+    public void getTypeTest() throws XPathExpressionException {
         Node relatedNode;
-        String expected, actual = "init";
+        String xPath, expected, actual = "init";
         //subtest 1: type "xsd:string"
-        relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1);
+        xPath = "/descendant::*[local-name()='element'][3]";
+        relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:                             <xsd:element name="position" type="xsd:string"/>
         expected = "xsd:string";
         try {
@@ -298,11 +313,10 @@ public class ParserTest {
         }
         //assertion
         assertEquals(expected, actual);
-        
+
         //subtest 2: type "xsd:decimal" - nested restriction
-        relatedNode = xsdDoc.getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(1)
-                    .getChildNodes().item(1).getChildNodes().item(1).getChildNodes().item(3);
+        xPath = "/descendant::*[local-name()='element'][4]";
+        relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:                             <xsd:element name="salary">
         expected = "xsd:decimal";
         try {
@@ -312,7 +326,7 @@ public class ParserTest {
         }
         //assertion
         assertEquals(expected, actual);
-        
+
     }
 
     private void assertDeepEqualsNotSorted(List<Node> expected, List<Node> actual) {
