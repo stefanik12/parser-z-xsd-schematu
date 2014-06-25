@@ -115,7 +115,7 @@ public class parser implements parserInterface {
     @Override
     public String createMethod(Node node, String str, String path) throws XPathExpressionException {
         List<String> attributes = getAttributes(node);
-        List<Node> underElements = getUnderElements(node);
+        List<Node> underElements = getSubElements(node);
 
         //String orPath = path;
         
@@ -212,7 +212,7 @@ public class parser implements parserInterface {
     }
 
     @Override
-    public List<Node> getUnderElements(Node node) throws XPathExpressionException {
+    public List<Node> getSubElements(Node node) throws XPathExpressionException {
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xpath = xPathFactory.newXPath();
         XPathExpression expr = xpath.compile("*");
