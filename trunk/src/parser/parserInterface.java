@@ -2,6 +2,7 @@ package parser;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Node;
@@ -16,7 +17,7 @@ public interface parserInterface {
     /**
      *makeParser will create parser for xsd schema
      */
-    void makeParser() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException;
+    //void makeParser() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException;
     
     /**Checks if the node is simple type
      * 
@@ -36,16 +37,17 @@ public interface parserInterface {
     /**Gets list of attributes of the node
      * 
      * @param node
-     * @return List of attributes of parameter node
+     * @return Map of attributes of parameter node
+     * @throws javax.xml.xpath.XPathExpressionException
      */
-    List<String> getAttributes(Node node) throws XPathExpressionException;
+    Map<String, String> getAttributes(Node node) throws XPathExpressionException;
     
     /**Gets under elements of node
      * 
      * @param node
      * @return List of nodes,that are under elements of parameter node
      */
-    List<Node> getUnderElements(Node node) throws XPathExpressionException;
+    List<Node> getSubElements(Node node) throws XPathExpressionException;
     
     /**Method getType returns type of node as string
      *
@@ -62,5 +64,5 @@ public interface parserInterface {
      * @param str String to which will created method append
      * @return String with appended method
      */
-    String createMethod(Node node,String str,String path) throws XPathExpressionException;
+    //String createMethod(Node node,String str,String path) throws XPathExpressionException;
 }

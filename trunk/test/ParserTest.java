@@ -32,7 +32,7 @@ import parser.parser;
  */
 public class ParserTest {
 
-    private String prefix = "src/parser/";
+    private final String prefix = "src/parser/";
 
     private Document xsdDoc;
     private final String xsdAddress = "testXSD.xsd";
@@ -45,7 +45,7 @@ public class ParserTest {
 
     private parser parserInstance;
 
-    XPath xpath;
+    private XPath xpath;
 
     @Before
     public void setUp() {
@@ -283,7 +283,7 @@ public class ParserTest {
 
         List<Node> actual = new ArrayList<>();
         try {
-            actual = parserInstance.getUnderElements(relatedNode);
+            actual = parserInstance.getSubElements(relatedNode);
         } catch (XPathExpressionException e) {
             assertFalse("Exception for a valid node was thrown: " + e.toString(), true);
         }

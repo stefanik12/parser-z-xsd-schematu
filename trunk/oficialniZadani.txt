@@ -1,2 +1,5 @@
 Oficiální zadání:
 Cílem tohoto projektu je vytvoøit generátor parserù v jazyce Java pro XML soubory. Vstupem je XML schema. Z tohoto schématu se vygenerují programové tøídy a parser, kterı dokáe instance tohoto schématu pøevádìt do instancí tìchto programovıch tøíd. Vısledkem tedy bude konzolová aplikace pro generování tøíd z XSD a pak programová tøída Parser, která umoní zparsovat XML soubor do tìchto vygenerovanıch tøíd. Vytvoøit tento parser detailnì s detekcí datovıch typù není jednoduchı úkol. Mùete tedy omezit funkcionalitu projektu na jednoduchı datovı typ xs:string kterı se bude mapovat na javovı typ String a veškeré XSD èíselné typy se budou parsovat do Javového Double. Pøi programování vyuíjte pouze JAXP pøípadnì Dom4J. Nepouívejte JAXB. Nicménì mùete se JAXB inspirovat. Souèástí vašeho øešení bude porovnání vašeho projektu s monostmi JAXB ( http://jaxb.java.net/) Souèástí projektu budou funkèní testy.
+
++aj tester vygenerovaného parseru
+nieèo na ten štıl,e máš skontrolova,èi vygenerovanı parser správne priradí hodnoty nami vygenerovanım premennım
