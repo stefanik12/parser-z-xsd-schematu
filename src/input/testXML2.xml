@@ -13,7 +13,7 @@ and open the template in the editor.
         <position>Programmer </position>
         <salary>10000</salary>
     </person>
-    <person name="Peter" ID="2">
+    <person name="Peter" ID="2"> 
         <position>Cleaner </position>
         <salary>20000</salary>
     </person>

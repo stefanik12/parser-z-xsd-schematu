@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 public class Gencompany {
-private final List<Integer> subElements = new ArrayList<>(Arrays.asList(2, 3, 4));
+private final List<Integer> subElements = new ArrayList<>(Arrays.asList(1));
 private final int parent = 1;
 public final boolean complex = true;
 private Object content = null;

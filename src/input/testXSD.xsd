@@ -12,7 +12,7 @@ Test  XML Schema for PB138 project
             <xsd:all>
                 <xsd:element name="person">
                     <xsd:complexType>
-                        <xsd:all>
+                        <xsd:sequence>
                             <xsd:element name="position" type="xsd:string"/>
                             <xsd:element name="salary">
                                 <xsd:simpleType>
@@ -21,7 +21,7 @@ Test  XML Schema for PB138 project
                                     </xsd:restriction>
                                 </xsd:simpleType>
                             </xsd:element>
-                        </xsd:all>
+                        </xsd:sequence>
                         <xsd:attribute name="name" type="xsd:string"/>
                         <xsd:attribute name="ID" type="xsd:integer"/>
                     </xsd:complexType>
