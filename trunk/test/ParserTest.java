@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -24,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import parser.NewBinder;
 import parser.parser;
 
 /**
@@ -32,7 +34,7 @@ import parser.parser;
  */
 public class ParserTest {
 
-    private final String prefix = "src/parser/";
+    private final String prefix = "src/input/";
 
     private Document xsdDoc;
     private final String xsdAddress = "testXSD.xsd";
@@ -43,7 +45,7 @@ public class ParserTest {
     private final String xmlAddress = "testXML2.xml";
     private File xmlFile, brokenXsdFile, xsdFile;
 
-    private parser parserInstance;
+    private NewBinder parserInstance;
 
     private XPath xpath;
 
@@ -59,7 +61,7 @@ public class ParserTest {
 
             xsdDoc = builder.parse(prefix + xsdAddress);
             xsdFile = new File(prefix + xsdAddress);
-            parserInstance = new parser(xsdFile);
+            parserInstance = new NewBinder(xsdFile);
 
             xmlFile = new File(prefix + xmlAddress);
             xmlDoc = builder.parse(xmlFile);
@@ -251,7 +253,7 @@ public class ParserTest {
         //points to                         <xsd:attribute name="ID" type="xsd:integer"/>
         expected.add(value);
 
-        List<String> actual = parserInstance.getAttributes(relatedNode);
+        List<String> actual = new ArrayList<>(parserInstance.getAttributes(relatedNode).keySet());
         //size assertion
         assertEquals(expected.size(), actual.size());
         //values assertion
@@ -266,28 +268,27 @@ public class ParserTest {
      * @throws javax.xml.xpath.XPathExpressionException if evaluation fails
      */
     @Test
-    public void getUnderElementsTest() throws XPathExpressionException {
+    public void getSubElementsTest() throws XPathExpressionException {
+
         String xPath = "/descendant::*[local-name()='element'][2]";
         Node relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:     <xsd:element name="person">
 
         List<Node> expected = new ArrayList<>();
-        
-        xPath = "/descendant::*[local-name()='element'][1]";
+
+        xPath = "./descendant::*[local-name()='element'][1]";
         expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
         //points to:                             <xsd:element name="position" type="xsd:string"/>
         
-        xPath = "/descendant::*[local-name()='element'][2]";
-        expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
-        //points to:                            <xsd:element name="salary">
-
+         xPath = "./descendant::*[local-name()='element'][2]";
+         expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
+         //points to:                            <xsd:element name="salary">
+         
         List<Node> actual = new ArrayList<>();
-        try {
-            actual = parserInstance.getSubElements(relatedNode);
-        } catch (XPathExpressionException e) {
-            assertFalse("Exception for a valid node was thrown: " + e.toString(), true);
-        }
 
+        actual = parserInstance.getSubElements(relatedNode);
+        
+        
         //length comparision 
         assertEquals(expected.size(), actual.size());
 
@@ -307,7 +308,7 @@ public class ParserTest {
         xPath = "/descendant::*[local-name()='element'][3]";
         relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:                             <xsd:element name="position" type="xsd:string"/>
-        expected = "xsd:string";
+        expected = "String";
         try {
             actual = parserInstance.getType(relatedNode);
         } catch (XPathExpressionException e) {
@@ -320,7 +321,7 @@ public class ParserTest {
         xPath = "/descendant::*[local-name()='element'][4]";
         relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:                             <xsd:element name="salary">
-        expected = "xsd:decimal";
+        expected = "double";
         try {
             actual = parserInstance.getType(relatedNode);
         } catch (XPathExpressionException e) {
@@ -336,23 +337,16 @@ public class ParserTest {
         assertEquals(expected.size(), actual.size());
 
         for (Node n : expected) {
-            boolean nameFound = false;
-            boolean valueFound = false;
-            //considered expected:
-            String name = n.getNodeName();
-            String value = n.getNodeValue();
+            boolean found = false;
 
             for (Node n2 : actual) {
-                if (n2.getNodeName().equals(name)) {
-                    nameFound = true;
-                }
-                if (n2.getNodeValue().equals(value)) {
-                    valueFound = true;
+                if (n.equals(n2)) {
+                    found = true;
                 }
             }
-            assertTrue(nameFound);
-            assertTrue(valueFound);
+            assertTrue(found);
         }
+
     }
 
     private void assertDeepEqualsNotSorted2(List<String> expected, List<String> actual) {

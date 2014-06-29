@@ -24,7 +24,7 @@ public interface parserInterface {
      * @param node
      * @return True if node is simple type
      */
-    boolean isSimpleType(Node node) throws XPathExpressionException;
+    //public boolean isSimpleType(Node node) throws XPathExpressionException;
     
     
     /**Checks if the node is complex
@@ -32,7 +32,7 @@ public interface parserInterface {
      * @param node
      * @return True if node is complex type
      */
-    boolean isComplexType(Node node)  throws XPathExpressionException;
+    //boolean isComplexType(Node node)  throws XPathExpressionException;
     
     /**Gets list of attributes of the node
      * 
@@ -40,7 +40,7 @@ public interface parserInterface {
      * @return Map of attributes of parameter node
      * @throws javax.xml.xpath.XPathExpressionException
      */
-    Map<String, String> getAttributes(Node node) throws XPathExpressionException;
+    //Map<String, String> getAttributes(Node node) throws XPathExpressionException;
     
     /**Gets under elements of node
      * 

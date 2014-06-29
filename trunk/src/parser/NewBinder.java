@@ -5,19 +5,13 @@
  */
 package parser;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,7 +33,7 @@ public class NewBinder implements parserInterface {
     private Document schema;
     private XPath xpath;
     private String expres;
-    private final String prefix = "xsd";
+    private static final String prefix = "xsd";
     private Collection collection;
     private String schemaName;
 
@@ -57,7 +51,7 @@ public class NewBinder implements parserInterface {
         schemaName = schemaFile.getName().replace(".xsd", "");
     }
 
-    public boolean bind() throws XPathExpressionException {
+    public Collection bind() throws XPathExpressionException {
         //step 1 get all xsd:element elements 
 
         expres = "/descendant::*[local-name()='element']";
@@ -65,22 +59,21 @@ public class NewBinder implements parserInterface {
 
         //step 2: generate content tree
         //for each element declare its childs  as subNodes
+        Map<Integer, String> elementNames;
+
         for (int i = 0; i < elements.getLength(); i++) {
             Node element = elements.item(i);
             String name = element.getAttributes().getNamedItem("name").getNodeValue();
             int ID = collection.add(name, element);
-
-            //invariant: adds all elements into Collection and assign their IDs
         }
 
         StringBuilder classContent;
 
         List<Integer> subElements;
-        Map<String, String> attributes;
         for (int i = 0; i < elements.getLength(); i++) {
 
             Node element = elements.item(i);
-
+            int ID = i;
             //2. get subElement ID
             //3. get content 
             //4. get attributes
@@ -91,6 +84,9 @@ public class NewBinder implements parserInterface {
             classContent = new StringBuilder();
             String end = System.lineSeparator();
             if (isSimpleType(element)) {
+                collection.set(ID, name, element, null);
+                //adds all elements into Collection and assign their IDs
+
                 //SimpleType template
                 classContent.append("package generated;")
                             .append(end)
@@ -125,30 +121,32 @@ public class NewBinder implements parserInterface {
                 String filename = "Gen" + name + ".java";
 
                 try {
-                    System.out.println(classContent.toString());
-                    save(filename, classContent.toString());
+                    FileManager.save(filename, classContent.toString());
                 } catch (IOException ex) {
-                    System.out.println("Class " + filename + " save operation failed");
-                    return false;
+                    return null;
                 }
 
             }
             if (isComplexType(element)) {
                 //subElements declaration
                 subElements = new ArrayList<>();
-                System.out.println("Element: " + element.getAttributes().getNamedItem("name").getNodeValue());
                 for (Node n : getSubElements(element)) {
                     String subName = n.getAttributes().getNamedItem("name").getNodeValue();
-                    System.out.println("Sub: " + subName);
                     int id = collection.getIdByName(subName);
                     subElements.add(id);
                 }
+                //System.out.println("subElements in Binder: "+subElements);
                 //Invariant: subElement IDs are assigned for every element from elements
+                collection.set(ID, name, element, subElements);
+                //adds all elements into Collection and assign their IDs
+
+                //subElements debud:
+                for (Integer e : collection.getSubElements(ID)) {
+                    System.out.println("subElement for " + ID + " - " + e);
+                }
+                //end
 
                 String subElementStr = subElements.toString().substring(1, subElements.toString().length() - 1);
-                //posledna ciarka musi prec 
-                System.out.println(subElementStr);
-
                 //definovat parenta
                 String parent = "1";
 
@@ -234,11 +232,10 @@ public class NewBinder implements parserInterface {
 
                 String filename = "Gen" + name + ".java";
                 try {
-                    System.out.println(classContent.toString());
-                    save(filename, classContent.toString());
+                    FileManager.save(filename, classContent.toString());
                 } catch (IOException ex) {
                     System.out.println("Class " + filename + " save operation failed");
-                    return false;
+                    return null;
                 }
             }
         }
@@ -247,21 +244,21 @@ public class NewBinder implements parserInterface {
         //interfaces
         //Collection
         try {
-            CollectionManager.insertIntoFile(collection, "src/generated/"+schemaName + "Col" + ".bin");
+            FileManager.insertIntoFile(collection, "src/generated/" + schemaName + "Col" + ".bin");
             System.out.println("Collection " + schemaName + " saved");
         } catch (IOException e) {
             System.out.println("Collection " + schemaName + " save failed");
-            return false;
+            return null;
         }
-        return true;
+        return collection;
     }
 
     /*
      **USED METHODS** 
      */
-    @Override
-    public boolean isSimpleType(Node node) throws XPathExpressionException {
-        expres = "./*";
+    public static boolean isSimpleType(Node node) throws XPathExpressionException {
+        String expres = "./*";
+        XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList result = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
 
         if ((result.getLength() == 0) || (result.item(0).getLocalName().equalsIgnoreCase("simpleType"))) {
@@ -271,9 +268,9 @@ public class NewBinder implements parserInterface {
         return false;
     }
 
-    @Override
-    public boolean isComplexType(Node node) throws XPathExpressionException {
+    public static boolean isComplexType(Node node) throws XPathExpressionException {
         String expres = "./*";
+        XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList result = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
 
         if (result.item(0) != null) {
@@ -284,9 +281,9 @@ public class NewBinder implements parserInterface {
         return false;
     }
 
-    @Override
-    public Map<String, String> getAttributes(Node node) throws XPathExpressionException {
-        expres = "./*/*[local-name()='attribute']";
+    public static Map<String, String> getAttributes(Node node) throws XPathExpressionException {
+        String expres = "./*/*[local-name()='attribute']";
+        XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList attributes = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
         Map<String, String> out = new HashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
@@ -299,7 +296,6 @@ public class NewBinder implements parserInterface {
             }
             type = convertType(type);
             out.put(atbute.getAttributes().getNamedItem("name").getNodeValue(), type);
-            System.out.println(atbute.getAttributes().getNamedItem("name").getNodeValue());
         }
 
         return out;
@@ -307,8 +303,15 @@ public class NewBinder implements parserInterface {
 
     @Override
     public List<Node> getSubElements(Node node) throws XPathExpressionException {
-        expres = "./*/descendant::*[local-name()='element']";
-        NodeList subElements = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
+
+        expres = "./*";
+        NodeList subElements = null;
+        while (subElements == null) {
+            expres = expres + "/*";
+            String expres2 = expres + "/*[local-name()='element']";
+            subElements = (NodeList) xpath.evaluate(expres2, node, XPathConstants.NODESET);
+
+        }
         List<Node> out = new ArrayList<>();
         for (int i = 0; i < subElements.getLength(); i++) {
             out.add(subElements.item(i));
@@ -339,7 +342,7 @@ public class NewBinder implements parserInterface {
         return convertType(foundType);
     }
 
-    public String convertType(String xsdType) {
+    public static String convertType(String xsdType) {
         switch (xsdType) {
             case prefix + ":byte":
             case prefix + ":decimal":
@@ -361,29 +364,4 @@ public class NewBinder implements parserInterface {
         }
 
     }
-
-    private void save(String filename, String classContent) throws IOException {
-        boolean success = false;
-        String path = "src/generated";
-        File folder = new File(path);
-        folder.mkdir();
-        File file = new File(path + "/" +filename);
-
-        file.createNewFile();
-        try (OutputStream os = new FileOutputStream(file)) {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os));
-            bw.write(classContent);
-            bw.flush();
-
-            success = true;
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(NewBinder.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
-        if (success) {
-            System.out.println(filename + " successfully generated");
-        }
-
-    }
-
 }
