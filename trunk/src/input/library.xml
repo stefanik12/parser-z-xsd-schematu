@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<library xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+         xsi:noNamespaceSchemaLocation='schema2.xsd'>
+    <book id="b0836217462" available="true">
+        <isbn>
+            836217462
+        </isbn>
+        <title lang="en" name="Being a Dog Is a Full-Time Job"/>
+        <author id="CMS">
+            <name>
+                Charles M Schulz
+            </name>
+            <born>
+                1922-11-26
+            </born>
+            <dead>
+                2000-02-12
+            </dead>
+        </author>
+        <character id="PP">
+            <figure>
+                Peppermint Patty
+            </figure>
+            <qualification>
+                bold, brash and tomboyish
+            </qualification>
+        </character>
+        <character id="Snoopy">
+            <figure>
+                Snoopy
+            </figure>
+            <qualification>
+                extroverted beagle
+            </qualification>
+        </character>
+        <character id="Schroeder">
+            <figure>
+                Schroeder
+            </figure>
+            <qualification>
+                brought classical music to the Peanuts strip
+            </qualification>
+        </character>
+        <character id="Lucy">
+            <figure>
+                Lucy
+            </figure>
+            <qualification>
+                bossy, crabby and selfish
+            </qualification>
+        </character>
+    </book>
+</library>

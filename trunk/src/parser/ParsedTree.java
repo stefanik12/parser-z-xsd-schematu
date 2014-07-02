@@ -6,6 +6,7 @@
 
 package parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
 public class ParsedTree {
-    private List<Node> tree;
+    private final List<Node> tree = new ArrayList<>();
     
     public ParsedTree addNode(Node n){
         tree.add(n);

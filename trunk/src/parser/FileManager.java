@@ -72,7 +72,7 @@ public class FileManager {
 
             success = true;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(NewBinder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Binder.class.getName()).log(Level.SEVERE, null, ex);
 
         }
         if (success) {
