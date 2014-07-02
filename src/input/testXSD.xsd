@@ -9,8 +9,8 @@ Test  XML Schema for PB138 project
             elementFormDefault="qualified">
     <xsd:element name="company">
         <xsd:complexType>
-            <xsd:all>
-                <xsd:element name="person">
+            <xsd:sequence>
+                <xsd:element name="person" maxOccurs="unbounded">
                     <xsd:complexType>
                         <xsd:sequence>
                             <xsd:element name="position" type="xsd:string"/>
@@ -26,7 +26,7 @@ Test  XML Schema for PB138 project
                         <xsd:attribute name="ID" type="xsd:integer"/>
                     </xsd:complexType>
                 </xsd:element>
-            </xsd:all>
+            </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
     

@@ -24,6 +24,7 @@ public class Collection implements Serializable {
     private final Map<Integer, Node> elements = new HashMap<>();
     private final Map<Integer, String> identifiers = new HashMap<>();
     private final Map<Integer, List<Integer>> tree = new HashMap<>();
+    private final Map<Integer, List<String>> attributes = new HashMap<>();
 
     private Integer idCounter = -1;
 
@@ -32,20 +33,21 @@ public class Collection implements Serializable {
     }
 
     public Integer add(String identifier, Node newO) {
-        return add(identifier, newO, null);
+        return add(identifier, newO, null, null);
     }
 
-    public Integer add(String identifier, Node newO, List<Integer> subElements) {
+    public Integer add(String identifier, Node newO, List<Integer> subElements, List<String> attribute) {
         idCounter++;
 
         elements.put(idCounter, newO);
         identifiers.put(idCounter, identifier);
         tree.put(idCounter, subElements);
-
+        attributes.put(idCounter, attribute);
+        
         return idCounter;
     }
 
-    public void set(int ID, String identifier, Node newO, List<Integer> subElements) {
+    public void set(int ID, String identifier, Node newO, List<Integer> subElements, List<String> attribute) {
         if (identifier != null) {
             identifiers.put(ID, identifier);
         }
@@ -54,6 +56,9 @@ public class Collection implements Serializable {
         }
         if (subElements != null) {
             tree.put(ID, subElements);
+        }
+        if(attribute != null){
+            attributes.put(ID, attribute);
         }
     }
 
@@ -100,5 +105,8 @@ public class Collection implements Serializable {
     public List<Integer> getSubElements(int PID) {
         return tree.get(PID);
     }
-
+    
+    public List<String> getAllAttributes(int ID){
+        return attributes.get(ID);
+    }
 }

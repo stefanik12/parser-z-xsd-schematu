@@ -17,25 +17,31 @@ import org.xml.sax.SAXException;
  */
 public class Main {
 
-    private static NewBinder binder;
-    private static String schemaPath = "src/input/testXSD.xsd";
+    private static Binder binder;
+    private static final String inputPath = "src/input/";
+    private static final String schema = "schema2.xsd";
+    private static final String XML = "library.xml";
     private static Marshaler marshaler;
-    private static Collection collection = null;
 
     public static void main(String[] args) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        System.out.println("hey there");
-        File schemaFile = new File(schemaPath);
-        binder = new NewBinder(schemaFile);
-        collection = binder.bind();
+        System.out.println("Schema Binder running with input schema: " + schema);
+        System.out.println("_______________________________________________");
+        File schemaFile = new File(inputPath + schema);
+        binder = new Binder(schemaFile);
+        Collection collection = binder.bind();
+        
         if (collection != null) {
-            //iniitializations for Marshaler
-            String xmlPath = "src/input/" + "testXML2.xml";
+            System.out.println(System.lineSeparator() + "Variable initialisation from " + XML + " started");
 
-            String schemaName = schemaFile.getName().replace(".xsd", "");
-            String collectionPath = "src/generated/" + schemaName + "Col" + ".bin";
-
-            marshaler = new Marshaler(new File(xmlPath), collection);
-            marshaler.marshal();
+            marshaler = new Marshaler(new File(inputPath + XML), collection);
+            if (marshaler.marshal()) {
+                System.out.println("_______________________________________________");
+                System.out.println("Success.");
+            } else {
+                System.out.println("Error: data initialisation failed.");
+            }
+        } else {
+            System.out.println("Error: Schema binding failed.");
         }
     }
 }

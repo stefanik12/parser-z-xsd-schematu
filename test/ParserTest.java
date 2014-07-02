@@ -25,8 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import parser.NewBinder;
-import parser.parser;
+import parser.Binder;
 
 /**
  *
@@ -36,16 +35,13 @@ public class ParserTest {
 
     private final String prefix = "src/input/";
 
-    private Document xsdDoc;
     private final String xsdAddress = "testXSD.xsd";
-    private Node schemaNode;
     InputSource xsdIS;
 
-    private Document xmlDoc;
     private final String xmlAddress = "testXML2.xml";
-    private File xmlFile, brokenXsdFile, xsdFile;
+    private File xmlFile, xsdFile;
 
-    private NewBinder parserInstance;
+    private Binder binderInstance;
 
     private XPath xpath;
 
@@ -59,14 +55,8 @@ public class ParserTest {
             // DocumentBuilder pouzijeme pro zpracovani XSD dokumentu
             // a ziskame model dokumentu ve formatu W3C DOM
 
-            xsdDoc = builder.parse(prefix + xsdAddress);
             xsdFile = new File(prefix + xsdAddress);
-            parserInstance = new NewBinder(xsdFile);
-
-            xmlFile = new File(prefix + xmlAddress);
-            xmlDoc = builder.parse(xmlFile);
-
-            brokenXsdFile = new File(prefix + "broken.xsd");
+            binderInstance = new Binder(xsdFile);
 
             //XPath intialisation block 
             xpath = XPathFactory.newInstance().newXPath();
@@ -82,36 +72,30 @@ public class ParserTest {
      */
     @Test
     public void makeParserTest() {
+        Binder testParser;
         //part 1:
-        //vytvor parser, assertuj, ze vznikol subor generatedFiles. Ak nevznikol, assertuj, ze bola vyhodena vynimka
-        parser testParser;
-        boolean err = false;
-        testParser = new parser(xmlFile);
+        //vytvor parser, pre validnu schemu. Nemoze byt vyhodena vynimka
+
+        File correctSchema = new File(prefix + "schema2.xsd");
         try {
-            testParser.makeParser();
-        } catch (IOException | ParserConfigurationException | XPathExpressionException | SAXException e) {
-            err = true;
+            testParser = new Binder(correctSchema);
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             assertFalse(e.getMessage(), true);
         } catch (Exception e) {
-            assertFalse("Exception thrown for valid document: " + e.toString(), true);
-        }
-        if (!new File(prefix + "generatedFiles").exists()) {
-            //OK
-        } else {
-            assertFalse(err);
+            assertFalse("Unknown exception thrown: " + e.toString(), true);
         }
 
         //part 2:
-        //vytvor parser s chybnym vstupom (nedokonceny uzol), assertuj vyhodenie IOException
-        // TO DO
-        testParser = new parser(brokenXsdFile);
+        //vytvor parser s chybnou schemou. Assertuj vyhodenie vynimky
+        File brokenSchema = new File(prefix + "broken.xsd");
+        boolean error = true;
         try {
-            testParser.makeParser();
-        } catch (IOException e) {
+            testParser = new Binder(brokenSchema);
+            error = false;
+        } catch (Exception e) {
             //OK
-        } catch (ParserConfigurationException | SAXException | XPathExpressionException e) {
-            assertFalse("IOException expected here", true);
         }
+        assertTrue(error);
     }
 
     /**
@@ -136,7 +120,7 @@ public class ParserTest {
 
         expected = false;
         try {
-            actual = parserInstance.isSimpleType(simpleTypeNode);
+            actual = binderInstance.isSimpleType(simpleTypeNode);
         } catch (XPathExpressionException e) {
             actual = true;
             //node is valid though an exception raised
@@ -152,7 +136,7 @@ public class ParserTest {
 
         expected = true;
         try {
-            actual = parserInstance.isSimpleType(simpleTypeNode);
+            actual = binderInstance.isSimpleType(simpleTypeNode);
         } catch (XPathExpressionException e) {
             actual = false;
             //node is valid though an exception raised
@@ -169,7 +153,7 @@ public class ParserTest {
 
         expected = true;
         try {
-            actual = parserInstance.isSimpleType(simpleTypeNode);
+            actual = binderInstance.isSimpleType(simpleTypeNode);
         } catch (XPathExpressionException e) {
             actual = false;
             //node is valid though an exception raised
@@ -201,7 +185,7 @@ public class ParserTest {
         boolean expected = true;
         boolean actual;
         try {
-            actual = parserInstance.isComplexType(complexTypeNode);
+            actual = binderInstance.isComplexType(complexTypeNode);
         } catch (XPathExpressionException e) {
             actual = false;
             //node is valid though an exception raised
@@ -217,7 +201,7 @@ public class ParserTest {
 
         expected = false;
         try {
-            actual = parserInstance.isComplexType(complexTypeNode);
+            actual = binderInstance.isComplexType(complexTypeNode);
         } catch (XPathExpressionException e) {
             actual = true;
             //node is valid though an exception raised
@@ -253,7 +237,7 @@ public class ParserTest {
         //points to                         <xsd:attribute name="ID" type="xsd:integer"/>
         expected.add(value);
 
-        List<String> actual = new ArrayList<>(parserInstance.getAttributes(relatedNode).keySet());
+        List<String> actual = new ArrayList<>(binderInstance.getAttributes(relatedNode).keySet());
         //size assertion
         assertEquals(expected.size(), actual.size());
         //values assertion
@@ -279,16 +263,15 @@ public class ParserTest {
         xPath = "./descendant::*[local-name()='element'][1]";
         expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
         //points to:                             <xsd:element name="position" type="xsd:string"/>
-        
-         xPath = "./descendant::*[local-name()='element'][2]";
-         expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
+
+        xPath = "./descendant::*[local-name()='element'][2]";
+        expected.add((Node) xpath.evaluate(xPath, relatedNode, XPathConstants.NODE));
          //points to:                            <xsd:element name="salary">
-         
+
         List<Node> actual = new ArrayList<>();
 
-        actual = parserInstance.getSubElements(relatedNode);
-        
-        
+        actual = binderInstance.getSubElements(relatedNode);
+
         //length comparision 
         assertEquals(expected.size(), actual.size());
 
@@ -310,7 +293,7 @@ public class ParserTest {
         //points to:                             <xsd:element name="position" type="xsd:string"/>
         expected = "String";
         try {
-            actual = parserInstance.getType(relatedNode);
+            actual = binderInstance.getType(relatedNode);
         } catch (XPathExpressionException e) {
             assertFalse("Valid node has thrown exception", true);
         }
@@ -323,7 +306,7 @@ public class ParserTest {
         //points to:                             <xsd:element name="salary">
         expected = "double";
         try {
-            actual = parserInstance.getType(relatedNode);
+            actual = binderInstance.getType(relatedNode);
         } catch (XPathExpressionException e) {
             System.out.println("here we are");
         }

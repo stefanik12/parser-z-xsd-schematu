@@ -5,175 +5,359 @@
  */
 package parser;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
- * @author Sven Relovsky
+ * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
-public class Binder implements BinderInterface {
+public class Binder implements parserInterface {
 
-    private Document doc;
+    private Document schema;
     private XPath xpath;
-    String prefix;
-    String classString;
-    private ArrayList<String> classNameList = new ArrayList<String>();
+    private String expres;
+    private static final String prefix = "xsd";
+    private Collection collection;
+    private String schemaName;
 
-    /**
-     * Constructor creating an instance of this class of given URI
-     *
-     * @param uri
-     * @throws javax.xml.parsers.ParserConfigurationException
-     * @throws org.xml.sax.SAXException
-     * @throws java.io.IOException
-     */
-    public Binder(URI uri) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory domFac = DocumentBuilderFactory.newInstance();
-        domFac.setNamespaceAware(true);
-        DocumentBuilder builder = domFac.newDocumentBuilder();
-        doc = builder.parse(uri.toString());
+    public Binder(File schemaFile) throws ParserConfigurationException, SAXException, IOException {
+        //step0: validate schema as valid XML document
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder docBuilder = dbf.newDocumentBuilder();
 
-        XPathFactory factory = XPathFactory.newInstance();
-        xpath = factory.newXPath();
+        schema = docBuilder.parse(schemaFile);
 
-        prefix = "xsd";//for now only xsd is implemented 
-
+        //other initialisations
+        xpath = XPathFactory.newInstance().newXPath();
+        collection = new Collection();
+        schemaName = schemaFile.getName().replace(".xsd", "");
     }
 
-    @Override
-    public String convertType(String convert) {
+    public Collection bind() throws XPathExpressionException {
+        //step 1 get all xsd:element elements 
 
-        /* 
-         if numric returns double
-         source http://www.w3schools.com/schema/schema_dtypes_numeric.asp
-         */
-        if (convert.equals(prefix + ":byte") || convert.equals(prefix + ":decimal")
-                    || convert.equals(prefix + ":int")
-                    || convert.equals(prefix + ":nonNegativeInteger")
-                    || convert.equals(prefix + ":nonPositiveInteger")
-                    || convert.equals(prefix + ":long")
-                    || convert.equals(prefix + ":negativeInteger")
-                    || convert.equals(prefix + ":short")
-                    || convert.equals(prefix + ":unsignedLong")
-                    || convert.equals(prefix + ":unsignedInt")
-                    || convert.equals(prefix + ":unsignedShort")
-                    || convert.equals(prefix + ":unsignedByte")) {
-            return "double";
-        } else {
-            if (convert.equals(prefix + ":string")) {
-                return "String";
-            } else {
-                return convert;
+        expres = "/descendant::*[local-name()='element']";
+        NodeList elements = (NodeList) xpath.evaluate(expres, schema, XPathConstants.NODESET);
+
+        //step 2: generate content tree
+        //for each element declare its childs  as subNodes
+        Map<Integer, String> elementNames;
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node element = elements.item(i);
+            String name = element.getAttributes().getNamedItem("name").getNodeValue();
+            int ID = collection.add(name, element);
+        }
+
+        StringBuilder classContent;
+
+        List<Integer> subElements;
+        for (int i = 0; i < elements.getLength(); i++) {
+
+            Node element = elements.item(i);
+            int ID = i;
+            //2. get subElement ID
+            //3. get content 
+            //4. get attributes
+            String name = element.getAttributes().getNamedItem("name").getNodeValue();
+            String type = getType(element);
+
+            // step 2: for each element generate Class content
+            classContent = new StringBuilder();
+            String end = System.lineSeparator();
+            if (isSimpleType(element)) {
+                collection.set(ID, name, element, null, null);
+                //adds all elements into Collection and assign their IDs
+
+                //SimpleType template
+                classContent.append("package generated;")
+                            .append(end)
+                            .append("public class Gen")
+                            .append(name)
+                            .append(" {")
+                            .append(end)
+                            .append("private ")
+                            .append(type)
+                            .append(" content")
+                            .append(";")
+                            .append(end)
+                            .append("public final boolean complex = false;")
+                            .append(end)
+                            .append("public ")
+                            .append(type)
+                            .append(" getContent() {")
+                            .append(end)
+                            .append("" + "return content;")
+                            .append(end)
+                            .append("}")
+                            .append(end)
+                            .append("" + "public void setContent(")
+                            .append(type)
+                            .append(" content) {")
+                            .append(end)
+                            .append("this.content = content;")
+                            .append(end)
+                            .append("}")
+                            .append(end)
+                            .append("}");
+                String filename = "Gen" + name + ".java";
+
+                try {
+                    FileManager.save(filename, classContent.toString());
+                } catch (IOException ex) {
+                    System.out.println("ERROR generating "+filename);
+                    return null;
+                }
+
             }
-        }
-    }
+            if (isComplexType(element)) {
+                //subElements declaration
+                subElements = new ArrayList<>();
+                for (Node n : getSubElements(element)) {
+                    String subName = n.getAttributes().getNamedItem("name").getNodeValue();
+                    int id = collection.getIdByName(subName);
+                    subElements.add(id);
+                }
+                //System.out.println("subElements in Binder: "+subElements);
+                //Invariant: subElement IDs are assigned for every element from elements
+                List<String> attributes = new ArrayList<>(getAttributes(element).keySet());
+                collection.set(ID, name, element, subElements, attributes);
+                //adds all elements into Collection and assign their IDs
+                String subElementStr;
+                if(subElements.size() == 0){
+                    subElementStr = "";
+                } else {
+                    subElementStr = "Arrays.asList("+subElements.toString().substring(1, subElements.toString().length() - 1)+")";
+                }
 
-    @Override
-    public void run() throws IOException {
+                // ComplexType template
+                classContent.append("package generated;")
+                            .append(end)
+                            .append("import java.util.ArrayList;")
+                            .append(end)
+                            .append("import java.util.Arrays;")
+                            .append(end)
+                            .append("import java.util.HashMap; ")
+                            .append(end)
+                            .append("import java.util.List;")
+                            .append(end)
+                            .append("import java.util.Map;")
+                            .append(end)
+                            .append("public class Gen" + name + " {")
+                            .append(end)
+                            .append("private final List<Integer> subElements = new ArrayList<>(" + subElementStr + ");")
+                            .append(end)
+                            .append("public final boolean complex = true;")
+                            .append(end);
+                if (type.equals("")) {
+                    classContent.append("private Object content = null;");
+                } else {
+                    classContent.append("private " + type + " content;");
+                }
+                classContent.append(end)
+                            .append("private final Map<String, Object> attributes = new HashMap<>();")
+                            .append(end).append("public Gen" + name + "(){" + end)
+                            .append(end);
 
-        prefix = doc.getDocumentElement().getPrefix();
+                for (Map.Entry<String, String> a : getAttributes(element).entrySet()) {
+                    //attribute set in format <String Attribute name, String Attribute type>
 
-        new File("/generatedFiles").mkdir();
-        File generatedClasses = new File("generatedFiles/generatedClasses.java");
-        BufferedWriter classWriter = new BufferedWriter(new FileWriter(generatedClasses));
+                    classContent.append("        setAttribute(\"" + a.getKey() + "\", \"" + a.getValue() + "\");" + end);
+                }
+                classContent.append("    }")
+                            //.append("@Override")
+                            .append(end)
+                            .append("    public List<Integer> getSubElements() {")
+                            .append(end)
+                            .append("        return subElements;")
+                            .append(end)
+                            .append("    }")
+                            .append(end)
+                            .append("    public void setAttribute(String attribute, Object value) {")
+                            .append(end)
+                            .append("        attributes.put(attribute, value);")
+                            .append(end)
+                            .append("    }")
+                            .append(end)
+                            //.append("    @Override")
+                            .append(end);
+                if (type.equals("")) {
+                    classContent.append("    public Object getContent() {");
+                } else {
+                    classContent.append("    public " + type + " getContent() {");
+                }
 
-        classString = ("package generatedFiles;"
-                    + "/**\n"
-                    + "*contains java class creating"
-                    + "*for each element of schema"
-                    + "*/"
-                    + "public class GeneratedClasses{\n\t");
+                classContent.append(end)
+                            .append("        return content;")
+                            .append(end)
+                            .append("    }")
+                            .append(end)
+                            //.append("    @Override")
+                            .append(end)
+                            .append("    public Map<String, Object> getAttributes() {")
+                            .append(end)
+                            .append("        return attributes;")
+                            .append(end)
+                            .append("    }")
+                            .append(end)
+                            //.append("    @Override")
+                            .append(end)
+                            .append("}");
 
-        //run
-        analyse("/" + prefix + ":schema", "", classWriter);
-
-        classString += ("\n}");
-        classWriter.write(classString);
-        classWriter.close();
-
-    }
-
-    @Override
-    public void analyse(String path, String parentalNodes, BufferedWriter writer)
-                throws IOException {
-        boolean a = true;
-        String newParents = parentalNodes;
-        NodeList nodes = null;
-        String newPath;
-
-        //This will require further processing of siblings
-        newPath = path + "/" + prefix + ":complexType[@name]";
-
-        try {
-            XPathExpression expr = xpath.compile(path);
-            Object result = expr.evaluate(doc, XPathConstants.NODESET);
-            nodes = (NodeList) result;
-        } catch (XPathExpressionException ex) {
-            Logger.getLogger(Binder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        if (nodes == null) {
-            //This will create complextype just for one element
-            newPath = path + "/" + prefix + ":element[@name and " + prefix
-                        + "complexType]";
-
-            try {
-                XPathExpression expr = xpath.compile(path);
-                Object result = expr.evaluate(doc, XPathConstants.NODESET);
-                nodes = (NodeList) result;
-                a = false;
-            } catch (XPathExpressionException ex) {
-                Logger.getLogger(Binder.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if (nodes != null) {
-            for (int i = 0; i < nodes.getLength(); i++) {
-                if (nodes.item(i) instanceof Element) {
-                    Element el = (Element) nodes.item(i);
-                    String nameAttr = el.getAttribute(path);
-
-                    //possible name conflict
-                    classNameList.add(nameAttr);
-                    if (a) {
-
-                    }
-
-                    writer.write("}\n\n");
-                    if (parentalNodes.isEmpty()) {
-                        writer.close();
-                    }
-
+                String filename = "Gen" + name + ".java";
+                try {
+                    FileManager.save(filename, classContent.toString());
+                } catch (IOException ex) {
+                    System.out.println("Class " + filename + " save operation failed");
+                    return null;
                 }
             }
         }
+
+        //ATTACH OTHER FILES INTO THE PACKAGE 
+        //interfaces
+        //Collection save - if Binder is used for more XML documents
+        /*
+        try {
+            FileManager.insertIntoFile(collection, "src/generated/" + schemaName + "Col" + ".bin");
+            System.out.println("Collection " + schemaName + " saved");
+        } catch (IOException e) {
+            System.out.println("Collection " + schemaName + " save failed");
+            return null;
+        }
+        */
+        return collection;
+    }
+
+    /*
+     **USED METHODS** 
+     */
+    public static boolean isSimpleType(Node node) throws XPathExpressionException {
+        String expres = "./*";
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList result = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
+
+        if ((result.getLength() == 0) || (result.item(0).getLocalName().equalsIgnoreCase("simpleType"))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isComplexType(Node node) throws XPathExpressionException {
+        String expres = "./*";
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList result = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
+
+        if (result.item(0) != null) {
+            if (result.item(0).getLocalName().equalsIgnoreCase("complexType")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Map<String, String> getAttributes(Node node) throws XPathExpressionException {
+        String expres = "./*/*[local-name()='attribute']";
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList attributes = (NodeList) xpath.evaluate(expres, node, XPathConstants.NODESET);
+        Map<String, String> out = new HashMap<>();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node atbute = attributes.item(i);
+            String type;
+            try {
+                type = atbute.getAttributes().getNamedItem("type").getNodeValue();
+            } catch (NullPointerException e) {
+                type = "null";
+            }
+            type = convertType(type);
+            out.put(atbute.getAttributes().getNamedItem("name").getNodeValue(), type);
+        }
+
+        return out;
     }
 
     @Override
-    public void complexToClass(String className, String parentNames) {
+    public List<Node> getSubElements(Node node) throws XPathExpressionException {
 
-    }
+        expres = "./*";
+        NodeList subElements = null;
+        while (subElements == null) {
+            expres = expres + "/*";
+            String expres2 = expres + "/*[local-name()='element']";
+            subElements = (NodeList) xpath.evaluate(expres2, node, XPathConstants.NODESET);
 
-    public void createAttributes(String path, BufferedWriter writer, boolean att, String parentNames) {
-
+        }
+        List<Node> out = new ArrayList<>();
+        for (int i = 0; i < subElements.getLength(); i++) {
+            out.add(subElements.item(i));
+        }
+        return out;
     }
 
     @Override
-    public void createFactoryMethod(String className, String parentNames) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getType(Node node) throws XPathExpressionException {
+        String foundType;
+
+        expres = "./*/*[local-name()='restriction']";
+        Node restrictionNode = (Node) xpath.evaluate(expres, node, XPathConstants.NODE);
+        expres = ".";
+        Node type = (Node) xpath.evaluate(expres, node, XPathConstants.NODE);
+
+        if (node.getAttributes().getNamedItem("type") != null) {
+            foundType = node.getAttributes().getNamedItem("type").getNodeValue();
+
+        } else if (isSimpleType(node) && restrictionNode != null) {
+            foundType = restrictionNode.getAttributes().getNamedItem("base").getNodeValue();
+
+        } else {
+            foundType = "null";
+        }
+
+        //output assignment
+        return convertType(foundType);
     }
 
+    public static String convertType(String xsdType) {
+        switch (xsdType) {
+            case prefix + ":byte":
+            case prefix + ":decimal":
+            case prefix + ":int":
+            case prefix + ":nonNegativeInteger":
+            case prefix + ":nonPositiveInteger":
+            case prefix + ":long":
+            case prefix + ":negativeInteger":
+            case prefix + ":short":
+            case prefix + ":unsignedLong":
+            case prefix + ":unsignedInt":
+            case prefix + ":unsignedShort":
+            case prefix + ":unsignedByte":
+            case prefix + ":double":
+                return "double";
+            case prefix + ":string":
+                return "String";
+            case "null":
+                return "Object";
+            default:
+                return "";
+        }
+
+    }
 }
