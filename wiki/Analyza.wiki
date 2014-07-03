@@ -1,7 +1,7 @@
 Projekt obsahuje podľa vzoru JAXB hlavné triedy Binder a Marshaler volané z exekučnej triedy Main.
 
 Binder má na vstupe XML Schemu.
-Z tej extrahuje všetky elementy ('<xsd:element>'), podľa ktorých potom vygeneruje príslušné javové triedy (obsahujúce inicializované premenné pre obsah (content) a atribúty) a tie uloží do balíka 'generated'.
+Z tej extrahuje všetky elementy ('xsd:element'), podľa ktorých potom vygeneruje príslušné javové triedy (obsahujúce inicializované premenné pre obsah (content) a atribúty) a tie uloží do balíka 'generated'.
 Výstupom sú javové triedy v balíku generated a inicializovaná štruktúra Collection obsahujúca pre každý element zo Schémy relevantné dáta, použité v Marshaleri.
 
 Marshaler má na vstupe 1) inicializovanú Collection a 2) XML dokument validný pre vstupnú XML schemu.
