@@ -1,7 +1,13 @@
-Projekt bude obsahovať triedy parser,binder,unit testy a porovnanie riešenia JAXP (ktoré používame) a riešenia,ktoré by JAXB využívalo.
+Projekt obsahuje podľa vzoru JAXB hlavné triedy Binder a Marshaler volané z exekučnej triedy Main.
 
-Trieda binder vytvorí javovské metódy a premenné podla atribútov a uzlov XSD schémy,na ktoré nadviaže trieda parser. Tieto metódy sa uložia do súboru vytvoreného v zložke "generatedFiles".
+Binder má na vstupe XML Schemu.
+Z tej extrahuje všetky elementy ('<xsd:element>'), podľa ktorých potom vygeneruje príslušné javové triedy (obsahujúce inicializované premenné pre obsah (content) a atribúty) a tie uloží do balíka 'generated'.
+Výstupom sú javové triedy v balíku generated a inicializovaná štruktúra Collection obsahujúca pre každý element zo Schémy relevantné dáta, použité v Marshaleri.
 
-Trieda parser vytvorí samostatný javovský súbor, v ktorom bude vygenerovaný parser pre XML súbor, ktorý by bol validovatelný XSD schémou.Je nutné aby schéma a parsovaný súbor mali rovnaké mená.
+Marshaler má na vstupe 1) inicializovanú Collection a 2) XML dokument validný pre vstupnú XML schemu.
+Marshaler pre každý element z Collection vyhľadá vo vstupnom XML dokumente relevantný element a z neho inicializuje premenné relevantnej triedy.
+Inicializácia prebieha vo vygenerovanej triede Parser.java. 
+Súčasťou inicializácie je, okrem naplnenia tried dátami z XML, aj hierarchické usporiadanie elementov (v parseri = premenných) podľa vstupnej XML Schemy, pomocou ID. Pre hierarchický model stromu sa používa trieda ParsedTree.java, pre reprezentáciu XML uzlov trieda Node.java ( obe v package 'source').
+Výstupom Marshaler-u je vygenerovaná inicializovaná trieda Parser, pripravená na ďaľšie použitie.
 
-Unit testy budú spravené pre obe triedy. Testy budú kontrolovať funkčnosť týchto metód,nie celkový výsledok programu. 
+Obe triedy používajú metódy z triedy Binder (per analýzu XML Schemy), pre tieto metódy sú vytvorené aj JUnit testy.
