@@ -11,3 +11,5 @@ Súčasťou inicializácie je, okrem naplnenia tried dátami z XML, aj hierarchi
 Výstupom Marshaler-u je vygenerovaná inicializovaná trieda Parser, pripravená na ďaľšie použitie.
 
 Obe triedy používajú metódy z triedy Binder (per analýzu XML Schemy), pre tieto metódy sú vytvorené aj JUnit testy.
+
+Kód sám neoveruje, či je vstupný XML dokument validný pre vstupnú XML Schemu, na čo slúžia iné nástroje. V prípade, že sa Schema nezhoduje so vstupným XML, Marshaler vyhodí na nešpecifikovanom mieste výnimku.
