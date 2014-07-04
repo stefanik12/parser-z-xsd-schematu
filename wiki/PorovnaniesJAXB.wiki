@@ -1,49 +1,26 @@
+Porovnanie s JAXB:
 #summary Porovnanie možností tohto projektu s možnosťami JAXB API
 
 = Úvod =
-Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda 
-
-veľký prienik s možnosťami JAXB.
+Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda veľký prienik s možnosťami JAXB.
 == O JAXB ==
-JAXB je API koncepčne odlišné od tradičného prístupu k dátam v štrukturovanom formáte 
-
-(zvyčajne XML). Samotný prístup k dátam (pomocou callback metód SAX modelu, alebo priamou 
-
-adresáciou pri DOM modeli)
+JAXB je API koncepčne odlišné od tradičného prístupu k dátam v štrukturovanom formáte (zvyčajne XML). Samotný prístup k dátam (pomocou callback metód SAX modelu, alebo priamou adresáciou pri DOM modeli)
 predchádza pri JAXB inicializácia objektov. Časti inicializácie:
 1. Mapovanie (Binding) elementov XML podľa jeho Schemy na objekty
-2. Zaradenie dát a usporiadanie objektov (Unmarshaling) do hierarchickej štruktúry 
+2. Zaradenie dát a usporiadanie objektov (Unmarshaling) do hierarchickej štruktúry odpovedajúcej vstupnému XML. Šttruktúra je reprezentovaná Obsahovým stromom (Content tree).
 
-odpovedajúcej vstupnému XML. Šttruktúra je reprezentovaná Obsahovým stromom (Content tree).
-
-Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) 
-
-naplnená dátami a pripravená poskytnúť developerovi prístup k dátam cez tieto objekty.
+Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) naplnená dátami a pripravená poskytnúť developerovi prístup k dátam cez tieto objekty.
 
 = Porovnanie = 
 
-Keďže Projekt mal za cieľ napodobniť a priblížiť sa možnostiam JAXB, v mnohom sa v použití 
-
-s JAXB zhoduje:
+Keďže Projekt mal za cieľ napodobniť a priblížiť sa možnostiam JAXB, v mnohom sa v použití s JAXB zhoduje:
 == Inicializácia ==
-prebieha v podobnom slede udalostí: V Projekte 1) trieda Binder prevedie zmapovanie 
+prebieha v podobnom slede udalostí: V Projekte 1) trieda Binder prevedie zmapovanie elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
+2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy (objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného XML (paralelne ku Content Tree v JAXB).
 
-elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné 
-
-rozhranie (simpleType - complexType interface).
-2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy 
-
-(objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného 
-
-XML (paralelne ku Content Tree v JAXB).
-
-Na rozdiel od Projektu, v JAXB sú obsiahnuté aj ďaľšie nástroje, ktoré Projekt nemal v 
-
-zámere realizovať:
+Na rozdiel od Projektu, v JAXB sú obsiahnuté aj ďaľšie nástroje, ktoré Projekt nemal v zámere realizovať:
 == JAXB obsahuje naviac ==
-- Možnosť spätného generovania XML podľa Content tree a zmapovaných objektov (odkazovanú 
-
-ako "Marshalling")
+- Možnosť spätného generovania XML podľa Content tree a zmapovaných objektov (odkazovanú ako "Marshalling")
 - Validáciu vstupného XML voči vstupnej Scheme pri Unmarshallingu
 - Voľbu dátového typu na uloženie simpleType elementov
 
