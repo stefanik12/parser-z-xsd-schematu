@@ -15,7 +15,7 @@ Po procese inicializácie je kolekcia objektov (implementujúcich relevantné ro
 
 Keďže Projekt mal za cieľ napodobniť a priblížiť sa možnostiam JAXB, v mnohom sa s JAXB zhoduje:
 == Inicializácia ==
-prebieha v podobnom slede udalostí: V Projekte<br> 1) trieda Binder prevedie zmapovanie elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
+Prebieha v podobnom slede udalostí: V Projekte:<br> 1) trieda Binder prevedie zmapovanie elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
 <br>2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy (objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného XML (paralelne ku Content Tree v JAXB).
 <br>
 <br>
