@@ -1,8 +1,8 @@
 Porovnanie možností tohto projektu s možnosťami JAXB API
 
-= Úvod =
+== Úvod ==
 Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda veľký prienik s možnosťami JAXB.
-== O JAXB ==
+=== O JAXB ===
 JAXB je API koncepčne odlišné od tradičného prístupu k dátam v štrukturovanom formáte (zvyčajne XML). Samotný prístup k dátam (pomocou callback metód SAX modelu, alebo priamou adresáciou pri DOM modeli)
 predchádza pri JAXB inicializácia objektov. <br> Časti inicializácie: <br>
 1. Mapovanie (Binding) elementov XML podľa jeho Schemy na objekty <br>
@@ -11,7 +11,7 @@ predchádza pri JAXB inicializácia objektov. <br> Časti inicializácie: <br>
 <br>
 Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) naplnená dátami a pripravená poskytnúť developerovi prístup k dátam cez tieto objekty.
 
-= Porovnanie = 
+== Porovnanie ==
 
 Keďže Projekt mal za cieľ napodobniť a priblížiť sa možnostiam JAXB, v mnohom sa s JAXB zhoduje:
 === Inicializácia ===
@@ -20,12 +20,12 @@ Prebieha v podobnom slede udalostí: V Projekte:<br> 1) trieda Binder prevedie z
 <br>
 <br>
 Na rozdiel od Projektu, v JAXB sú obsiahnuté aj ďaľšie nástroje, ktoré Projekt nemal v zámere realizovať:
-== JAXB obsahuje naviac ==
+=== JAXB obsahuje naviac ===
 - Možnosť spätného generovania XML podľa Content tree a zmapovaných objektov (odkazovanú ako "Marshalling")<br>
 - Validáciu vstupného XML voči vstupnej Scheme pri Unmarshallingu<br>
 - Voľbu dátového typu na uloženie simpleType elementov<br>
 
-== Projektové riešenie umožňuje naviac ==
+=== Projektové riešenie umožňuje naviac ===
 - Transparentnú inicializáciu objektov v Parser-i, ľahko upraviteľnú<br>
 - Možnosť za určitých okolností inicializovať objekty z XML, ktoré nie je validné pre namapovanú XML Schemu<br>
 - Rozšírenie pre použitie namapovanej Schemy pre viac XML dokumentov<br>
