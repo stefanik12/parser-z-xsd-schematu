@@ -1,5 +1,4 @@
-Porovnanie s JAXB:
-#summary Porovnanie možností tohto projektu s možnosťami JAXB API
+Porovnanie možností tohto projektu s možnosťami JAXB API
 
 = Úvod =
 Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda veľký prienik s možnosťami JAXB.
