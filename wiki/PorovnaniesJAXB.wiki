@@ -5,8 +5,8 @@ Porovnanie s JAXB:
 Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda veľký prienik s možnosťami JAXB.
 == O JAXB ==
 JAXB je API koncepčne odlišné od tradičného prístupu k dátam v štrukturovanom formáte (zvyčajne XML). Samotný prístup k dátam (pomocou callback metód SAX modelu, alebo priamou adresáciou pri DOM modeli)
-predchádza pri JAXB inicializácia objektov. Časti inicializácie: *
-1. Mapovanie (Binding) elementov XML podľa jeho Schemy na objekty *
+predchádza pri JAXB inicializácia objektov. Časti inicializácie:
+1. Mapovanie (Binding) elementov XML podľa jeho Schemy na objekty </br>
 2. Zaradenie dát a usporiadanie objektov (Unmarshaling) do hierarchickej štruktúry odpovedajúcej vstupnému XML. Šttruktúra je reprezentovaná Obsahovým stromom (Content tree).
 
 Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) naplnená dátami a pripravená poskytnúť developerovi prístup k dátam cez tieto objekty.
