@@ -5,26 +5,28 @@ Porovnanie s JAXB:
 Tento projekt je koncepčne inšpirovaný architektúrou JAXB, možnosti jeho riešenia majú teda veľký prienik s možnosťami JAXB.
 == O JAXB ==
 JAXB je API koncepčne odlišné od tradičného prístupu k dátam v štrukturovanom formáte (zvyčajne XML). Samotný prístup k dátam (pomocou callback metód SAX modelu, alebo priamou adresáciou pri DOM modeli)
-predchádza pri JAXB inicializácia objektov. Časti inicializácie:
+predchádza pri JAXB inicializácia objektov. <br> Časti inicializácie: <br>
 1. Mapovanie (Binding) elementov XML podľa jeho Schemy na objekty <br>
 2. Zaradenie dát a usporiadanie objektov (Unmarshaling) do hierarchickej štruktúry odpovedajúcej vstupnému XML. Šttruktúra je reprezentovaná Obsahovým stromom (Content tree).
-
+<br>
+<br>
 Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) naplnená dátami a pripravená poskytnúť developerovi prístup k dátam cez tieto objekty.
 
 = Porovnanie = 
 
 Keďže Projekt mal za cieľ napodobniť a priblížiť sa možnostiam JAXB, v mnohom sa v použití s JAXB zhoduje:
 == Inicializácia ==
-prebieha v podobnom slede udalostí: V Projekte 1) trieda Binder prevedie zmapovanie elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
-2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy (objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného XML (paralelne ku Content Tree v JAXB).
-
+prebieha v podobnom slede udalostí: V Projekte<br> 1) trieda Binder prevedie zmapovanie elementov popísaných v Scheme a vygenerovanie príslušných tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
+<br>2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy (objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného XML (paralelne ku Content Tree v JAXB).
+<br>
+<br>
 Na rozdiel od Projektu, v JAXB sú obsiahnuté aj ďaľšie nástroje, ktoré Projekt nemal v zámere realizovať:
 == JAXB obsahuje naviac ==
-- Možnosť spätného generovania XML podľa Content tree a zmapovaných objektov (odkazovanú ako "Marshalling")
-- Validáciu vstupného XML voči vstupnej Scheme pri Unmarshallingu
-- Voľbu dátového typu na uloženie simpleType elementov
+- Možnosť spätného generovania XML podľa Content tree a zmapovaných objektov (odkazovanú ako "Marshalling")<br>
+- Validáciu vstupného XML voči vstupnej Scheme pri Unmarshallingu<br>
+- Voľbu dátového typu na uloženie simpleType elementov<br>
 
 == Projektové riešenie umožňuje naviac ==
-- Transparentnú inicializáciu objektov v Parser-i, ľahko upraviteľnú
-- Možnosť za určitých okolností inicializovať objekty z XML, ktoré nie je validné pre namapovanú XML Schemu
-- Rozšírenie pre použitie namapovanej Schemy pre viac XML dokumentov
+- Transparentnú inicializáciu objektov v Parser-i, ľahko upraviteľnú<br>
+- Možnosť za určitých okolností inicializovať objekty z XML, ktoré nie je validné pre namapovanú XML Schemu<br>
+- Rozšírenie pre použitie namapovanej Schemy pre viac XML dokumentov<br>
