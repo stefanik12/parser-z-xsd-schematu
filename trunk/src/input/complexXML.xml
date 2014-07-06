@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <library xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-         xsi:noNamespaceSchemaLocation='schema2.xsd'>
+         xsi:noNamespaceSchemaLocation='complexSchema.xsd'>
     <book id="b0836217462" available="true">
         <isbn>
             836217462

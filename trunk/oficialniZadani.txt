@@ -3,3 +3,44 @@ Cílem tohoto projektu je vytvoøit generátor parserù v jazyce Java pro XML soubor
 
 +aj tester vygenerovaného parseru
 nieèo na ten štıl,e máš skontrolova,èi vygenerovanı parser správne priradí hodnoty nami vygenerovanım premennım
+
+
+Porovnanie s JAXB:
+#summary Porovnanie moností tohto projektu s monosami JAXB API
+
+= Úvod =
+Tento projekt je koncepène inšpirovanı architektúrou JAXB, monosti jeho riešenia majú teda ve¾kı prienik s monosami JAXB.
+== O JAXB ==
+JAXB je API koncepène odlišné od tradièného prístupu k dátam v štrukturovanom formáte (zvyèajne XML). Samotnı prístup k dátam (pomocou callback metód SAX modelu, alebo priamou adresáciou pri DOM modeli)
+predchádza pri JAXB inicializácia objektov. Èasti inicializácie:
+1. Mapovanie (Binding) elementov XML pod¾a jeho Schemy na objekty
+2. Zaradenie dát a usporiadanie objektov (Unmarshaling) do hierarchickej štruktúry odpovedajúcej vstupnému XML. Šttruktúra je reprezentovaná Obsahovım stromom (Content tree).
+
+Po procese inicializácie je kolekcia objektov (implementujúcich relevantné rozhrania) naplnená dátami a pripravená poskytnú developerovi prístup k dátam cez tieto objekty.
+
+= Porovnanie = 
+
+Keïe Projekt mal za cie¾ napodobni a priblíi sa monostiam JAXB, v mnohom sa v pouití s JAXB zhoduje:
+== Inicializácia ==
+prebieha v podobnom slede udalostí: V Projekte 1) trieda Binder prevedie zmapovanie elementov popísanıch v Scheme a vygenerovanie príslušnıch tried implementujúcich relevantné rozhranie (simpleType - complexType interface).
+2) Trieda Marshaler potom vygeneruje triedu Parser, ktorá naplní vygenerované triedy (objekty) Binder-u dátami. Inicializáciou triedy ParsedTree sa popíše štruktúra vstupného XML (paralelne ku Content Tree v JAXB).
+
+Na rozdiel od Projektu, v JAXB sú obsiahnuté aj ïa¾šie nástroje, ktoré Projekt nemal v úmysle realizova:
+== JAXB obsahuje naviac ==
+- Monos spätného generovania XML pod¾a Content tree a zmapovanıch objektov (odkazovanú ako "Marshalling")
+
+TO DO:
+JAXB allows you to access XML data without having to unmarshal it. Once a schema is bound you can use the ObjectFactory methods to create the objects and then use set methods in the generated objects to create content.
+
+You can validate source data against an associated schema as part of the unmarshalling operation, but you can turn validation off if you don't want to incur the additional validation overhead.
+
+Customize the binding of a simple data type.
+
+Additional customizations:
+
+Binding Can Be Customized
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages

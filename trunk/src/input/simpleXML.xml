@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <company
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-    xsi:noNamespaceSchemaLocation='testXSD.xsd'>
+    xsi:noNamespaceSchemaLocation='simpleSchema.xsd'>
     <person name="Adam" ID="1">
         <position>Programmer </position>
         <salary>10000</salary>
