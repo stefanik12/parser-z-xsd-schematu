@@ -1,6 +1,6 @@
 == Záverečná správa ==
 === Organizačné pozadie ===
-Projekt mal byť pôvodne riešený s rozdelením úloh uvedeným v [https://code.google.com/p/parser-z-xsd-schematu/wiki/RozdelenieVyvoja] Rozdelení vývoja.
+Projekt mal byť pôvodne riešený s rozdelením úloh uvedeným v [https://code.google.com/p/parser-z-xsd-schematu/wiki/RozdelenieVyvoja].
 Po neúspešných snahách o implementáciu jadra Binder-u sa členovia David Fatěna, Sven Relovský a vedúci projektu Marek Burda rozhodli rezignovať a projekt nedokončiť. Od *SVN rev.40* som pokračoval vo vývoji ja sám (Michal Štefánik).
 
 === Skutočné rozdelene vývoja ===
