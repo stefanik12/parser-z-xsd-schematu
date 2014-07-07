@@ -120,7 +120,7 @@ public class Collection implements Serializable {
         return -1;
     }
     
-    public Integer getParent(){
+    public Integer getRoot(){
         for (Integer id : getIDmap().keySet()) {
             if (getParent(id) == -1) {
                 return id;

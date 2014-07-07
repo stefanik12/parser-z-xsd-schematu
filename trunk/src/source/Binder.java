@@ -1,10 +1,13 @@
 /*
-Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
+ Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
  */
 package source;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +29,14 @@ import org.xml.sax.SAXException;
  * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
 public class Binder {
+    // Implements BinderInterface, only with static methods
 
     private Document schema;
     private static XPath xpath;
     private static String expres;
     private static final String prefix = "xsd";
     private Collection collection;
-    
+
     /**
      * @param schemaFile initiate Binder with this file
      * @throws ParserConfigurationException on invalid configuration
@@ -51,11 +55,13 @@ public class Binder {
         xpath = XPathFactory.newInstance().newXPath();
         collection = new Collection();
     }
-    
+
     /**
-     * @param outputDir directory where the generated files are attempted to be saved
-     * @return Collection with given information about Content tree and generated objects
-     * @throws XPathExpressionException if XML Schema of this binder is invalid 
+     * @param outputDir directory where the generated files are attempted to be
+     * saved
+     * @return Collection with given information about Content tree and
+     * generated objects
+     * @throws XPathExpressionException if XML Schema of this binder is invalid
      */
     public Collection bind(File outputDir) throws XPathExpressionException {
 
@@ -81,6 +87,7 @@ public class Binder {
             String name = element.getAttributes().getNamedItem("name").getNodeValue();
             String type = getType(element);
             String cname = "Gen" + name;
+            String filename = "Corrupted.java";
 
             // for each element generate Class content
             classContent = new StringBuilder();
@@ -91,8 +98,6 @@ public class Binder {
 
                 //SimpleType template
                 classContent.append("package generated;")
-                            .append(end)
-                            .append("import generatedInterface.*;")
                             .append(end)
                             .append("public class ")
                             .append(cname)
@@ -126,14 +131,7 @@ public class Binder {
                             .append("    }")
                             .append(end)
                             .append("}");
-                String filename = cname + ".java";
-
-                try {
-                    FileManager.save(filename, classContent.toString(), outputDir);
-                } catch (IOException ex) {
-                    System.out.println("ERROR generating " + filename);
-                    return null;
-                }
+                filename = cname + ".java";
 
             }
             if (isComplexType(element)) {
@@ -151,8 +149,6 @@ public class Binder {
 
                 // ComplexType template
                 classContent.append("package generated;")
-                            .append(end)
-                            .append("import generatedInterface.*;")
                             .append(end)
                             .append("import java.util.HashMap; ")
                             .append(end)
@@ -222,16 +218,27 @@ public class Binder {
                             .append(end)
                             .append("}");
 
-                String filename = "Gen" + name + ".java";
-                try {
-                    FileManager.save(filename, classContent.toString(), outputDir);
-                } catch (IOException ex) {
-                    System.out.println("Class " + filename + " save operation failed");
-                    return null;
-                }
+                filename = "Gen" + name + ".java";
+            }
+            try {
+                FileManager.save(filename, classContent.toString(), outputDir);
+
+            } catch (IOException ex) {
+                System.out.println("ERROR generating " + filename);
+                return null;
             }
         }
+        //append interfaces to the outputDir
+        try {
+            
 
+            new FileManager().copy("dependencies/SimpleType.java", outputDir.getAbsolutePath());
+            new FileManager().copy("dependencies/ComplexType.java", outputDir.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("ERROR generating Interfaces");
+            System.out.println("Exception msg:" + e.toString());
+            return null;
+        }
         return collection;
     }
 

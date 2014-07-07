@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
  */
 
 import java.io.File;
@@ -31,12 +29,12 @@ import source.Binder;
  */
 public class BinderTest {
 
-    private final String prefix = "src/input/";
+    private final String prefix = "D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/input/";
 
-    private final String xsdAddress = "testXSD.xsd";
+    private final String xsdAddress = "simpleSchema.xsd";
     InputSource xsdIS;
 
-    private final String xmlAddress = "testXML2.xml";
+    private final String xmlAddress = "simpleXML.xml";
     private File xmlFile, xsdFile;
 
     private Binder binderInstance;
@@ -74,7 +72,7 @@ public class BinderTest {
         //part 1:
         //vytvor parser, pre validnu schemu. Nemoze byt vyhodena vynimka
 
-        File correctSchema = new File(prefix + "schema2.xsd");
+        File correctSchema = new File(prefix + xsdAddress);
         try {
             testParser = new Binder(correctSchema);
         } catch (IOException | ParserConfigurationException | SAXException e) {
@@ -304,7 +302,7 @@ public class BinderTest {
         xPath = "/descendant::*[local-name()='element'][4]";
         relatedNode = (Node) xpath.evaluate(xPath, xsdIS, XPathConstants.NODE);
         //points to:                             <xsd:element name="salary">
-        expected = "double";
+        expected = "Double";
         try {
             actual = binderInstance.getType(relatedNode);
         } catch (XPathExpressionException e) {

@@ -1,18 +1,18 @@
+/*
+Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
+ */
 package source;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 /**
  *
- * @author Marek Burda
+ *  @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
-public interface parserInterface {
+public interface BinderInterface {
     
     /**
      *makeParser will create parser for xsd schema
@@ -24,7 +24,7 @@ public interface parserInterface {
      * @param node
      * @return True if node is simple type
      */
-    //public boolean isSimpleType(Node node) throws XPathExpressionException;
+    public boolean isSimpleType(Node node) throws XPathExpressionException;
     
     
     /**Checks if the node is complex
@@ -32,7 +32,7 @@ public interface parserInterface {
      * @param node
      * @return True if node is complex type
      */
-    //boolean isComplexType(Node node)  throws XPathExpressionException;
+    boolean isComplexType(Node node)  throws XPathExpressionException;
     
     /**Gets list of attributes of the node
      * 
@@ -40,7 +40,7 @@ public interface parserInterface {
      * @return Map of attributes of parameter node
      * @throws javax.xml.xpath.XPathExpressionException
      */
-    //Map<String, String> getAttributes(Node node) throws XPathExpressionException;
+    Map<String, String> getAttributes(Node node) throws XPathExpressionException;
     
     /**Gets under elements of node
      * 
@@ -64,5 +64,5 @@ public interface parserInterface {
      * @param str String to which will created method append
      * @return String with appended method
      */
-    //String createMethod(Node node,String str,String path) throws XPathExpressionException;
+    String createMethod(Node node,String str,String path) throws XPathExpressionException;
 }
