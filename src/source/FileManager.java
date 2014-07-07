@@ -1,5 +1,5 @@
 /*
-Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
+ Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
  */
 package source;
 
@@ -15,12 +15,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *  @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
- *  Class for saving text files and both saving and loading binary data structures (used to store Collection state)
+ * @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
+ * Class for saving text files and both saving and loading binary data
+ * structures (used to store Collection state)
  */
 public class FileManager {
 
@@ -52,11 +60,11 @@ public class FileManager {
     //Text files management
     public static void save(String filename, String classContent, File outputDir) throws IOException {
         boolean success = false;
-        
-        if(!outputDir.mkdir() && !outputDir.exists()){
-            System.out.println("path "+outputDir.getAbsolutePath()+" was unable to be created");
+
+        if (!outputDir.mkdir() && !outputDir.exists()) {
+            System.out.println("path " + outputDir.getAbsolutePath() + " was unable to be created");
         }
-        
+
         File file = new File(outputDir.getAbsolutePath() + "/" + filename);
 
         file.createNewFile();
@@ -72,6 +80,28 @@ public class FileManager {
         }
         if (success) {
             System.out.println(filename + " successfully generated");
+        }
+    }
+
+    // Text file management
+    public void copy(String source, String target) throws IOException {
+        try {
+            URL url = getClass().getResource("").toURI().toURL();
+
+            String applicationDir = url.getPath() + "/../../../";
+            if (url.getProtocol().equals("jar")) {
+                applicationDir = new File(((JarURLConnection) url.openConnection()).getJarFileURL().getFile()).getParent() + "/../";
+            }
+
+            File in = new File(applicationDir + source);
+            File out = new File(target + "/" + in.getName());
+            if (!out.exists()) {
+                out.createNewFile();
+            }
+            Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (MalformedURLException | URISyntaxException e) {
+            System.out.println("Error when determining this project location: " + e.toString());
+            throw new IOException(e.toString());
         }
     }
 }

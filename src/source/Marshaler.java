@@ -66,10 +66,9 @@ public class Marshaler {
         StringBuilder parser = new StringBuilder();
         String end = System.lineSeparator();
         parser.append("package generated;" + end
-                    + "import source.*;" + end
-                    + "public class Parser {" + end
+                    + "public class Parser implements ParserInterface {" + end
                     + "    private final ParsedTree tree = new ParsedTree();" + end
-                    + "" + end
+                    + end
                     + "    public Parser() {" + end
                     + "");
         
@@ -185,6 +184,12 @@ public class Marshaler {
         try {
             //save generated Parser.java
             FileManager.save("Parser.java", parser.toString(), outputDir);
+            //attach ParserInterface, Node, ParsedTree to outputDir 
+            
+            
+            new FileManager().copy("dependencies/ParserInterface.java", outputDir.getAbsolutePath());
+            new FileManager().copy("dependencies/Node.java", outputDir.getAbsolutePath());
+            new FileManager().copy("dependencies/ParsedTree.java", outputDir.getAbsolutePath());
         } catch (IOException ex) {
             System.out.println("Saving Parser.java failed");
         }
@@ -194,19 +199,18 @@ public class Marshaler {
     // Shared resources for elements ordering
     private List<Integer> visited = new ArrayList<>();
     private List<Integer> visited2 = new ArrayList<>();
-
+    
     /**
      *  Triggering function for postOrderDFS()
      * @return list of elements specifically ordered
      */
     private List<Integer> order() {
-        Integer root = collection.getParent();
+        Integer root = collection.getRoot();
         
         postOrderDFS(root);
         visited2.add(root);
         return visited2;
     }
-
     /**
      * Recursive Post-order DepthFirst Search over general tree function
      *  Uses shared data types to gather browsed nodes

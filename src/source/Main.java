@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Project for PV138 as tought on Faculty of Informatics on Masaryk University in 2014
  */
 package source;
 
@@ -35,7 +33,7 @@ public class Main {
                 XMLFile = new File(args[1]);
                 XML = XMLFile.getName();
 
-                outputDir = new File(args[2]);
+                outputDir = new File(args[2]+"/generated");
             }
         } else {
             System.out.println("NOTE: not all input files given: application runs in test mode with implicit input files.");
