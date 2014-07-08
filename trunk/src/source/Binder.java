@@ -5,9 +5,6 @@ package source;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -228,10 +225,15 @@ public class Binder {
                 return null;
             }
         }
-        //append interfaces to the outputDir
+       
         try {
+            /* 
+                 Uncomment this to save the gathered collection, if this binding will be used to match multiple XML files
+                 see the Main class for reversed loading
+                 FileManager.insertIntoFile(collection, collectionPath);
+                */
             
-
+           //append interfaces to the outputDir
             new FileManager().copy("dependencies/SimpleType.java", outputDir.getAbsolutePath());
             new FileManager().copy("dependencies/ComplexType.java", outputDir.getAbsolutePath());
         } catch (IOException e) {

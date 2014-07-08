@@ -19,12 +19,14 @@ public class Main {
     private static String inputPath = "D:/Codes/MU_scripty/Znacky/Projekt/trunk/src/input/";
     private static String schema = "complexSchema.xsd";
     private static String XML = "complexXML.xml";
-    private static File outputDir = new File("src/generated");
+    private static File outputDir;
     private static Marshaler marshaler;
 
     public static void main(String[] args) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
         File schemaFile = new File(inputPath + schema);
         File XMLFile = new File(inputPath + XML);
+        
+        
         if (args.length == 3) {
             if (args[0] != null && args[1] != null && args[2] != null) {
                 schemaFile = new File(args[0]);
@@ -37,18 +39,20 @@ public class Main {
             }
         } else {
             System.out.println("NOTE: not all input files given: application runs in test mode with implicit input files.");
+            outputDir = new File(new FileManager().getProjectHome()+"src/generated");
         }
 
         System.out.println("Schema Binder running with input schema: " + schema);
         System.out.println("_______________________________________________");
-
+        
+        Collection collection;
         /* uncomment code below and comment Binder usage to load collection from external binary
          - can be used if multiple XMLs is bound for one Scherma
             
          collection = (Collection) FileManager.selectFromFile(collectionPath);
          */
         binder = new Binder(schemaFile);
-        Collection collection = binder.bind(outputDir);
+        collection = binder.bind(outputDir);
 
         if (collection != null) {
             System.out.println(System.lineSeparator() + "Variable initialisation from " + XML + " started");
@@ -56,6 +60,7 @@ public class Main {
             marshaler = new Marshaler(XMLFile, collection);
             if (marshaler.marshal(outputDir)) {
                 System.out.println("_______________________________________________");
+                System.out.println("Objects generated into: "+outputDir.getAbsolutePath());
                 System.out.println("Success.");
             } else {
                 System.out.println("Error: data initialisation failed.");
