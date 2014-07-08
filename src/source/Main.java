@@ -38,7 +38,7 @@ public class Main {
                 outputDir = new File(args[2]+"/generated");
             }
         } else {
-            System.out.println("NOTE: not all input files given: application runs in test mode with implicit input files.");
+            System.out.println("NOTE: not all input files given: application runs in test mode with implicit input files. Output folder set to $Project/src/generated");
             outputDir = new File(new FileManager().getProjectHome()+"src/generated");
         }
 
@@ -60,7 +60,6 @@ public class Main {
             marshaler = new Marshaler(XMLFile, collection);
             if (marshaler.marshal(outputDir)) {
                 System.out.println("_______________________________________________");
-                System.out.println("Objects generated into: "+outputDir.getAbsolutePath());
                 System.out.println("Success.");
             } else {
                 System.out.println("Error: data initialisation failed.");
