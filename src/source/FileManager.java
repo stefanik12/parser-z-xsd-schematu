@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,6 +84,15 @@ public class FileManager {
 
     // Text file management
     public void copy(String source, String target) throws IOException {
+        File in = new File(getProjectHome() + source);
+        File out = new File(target + "/" + in.getName());
+        if (!out.exists()) {
+            out.createNewFile();
+        }
+        Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public String getProjectHome() throws IOException {
         try {
             URL url = getClass().getResource("").toURI().toURL();
 
@@ -92,13 +100,8 @@ public class FileManager {
             if (url.getProtocol().equals("jar")) {
                 applicationDir = new File(((JarURLConnection) url.openConnection()).getJarFileURL().getFile()).getParent() + "/../";
             }
-
-            File in = new File(applicationDir + source);
-            File out = new File(target + "/" + in.getName());
-            if (!out.exists()) {
-                out.createNewFile();
-            }
-            Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            return applicationDir;
         } catch (MalformedURLException | URISyntaxException e) {
             System.out.println("Error when determining this project location: " + e.toString());
             throw new IOException(e.toString());

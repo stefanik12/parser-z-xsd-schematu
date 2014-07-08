@@ -13,12 +13,7 @@ import org.w3c.dom.Node;
  *  @author Michal Štefánik 422237 <https://is.muni.cz/auth/osoba/422237>
  */
 public interface BinderInterface {
-    
-    /**
-     *makeParser will create parser for xsd schema
-     */
-    //void makeParser() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException;
-    
+
     /**Checks if the node is simple type
      * 
      * @param node
@@ -56,13 +51,12 @@ public interface BinderInterface {
      * @throws XPathExpressionException
      */
     String getType(Node node) throws XPathExpressionException;
-    
-    /**
-     Method will append new method for parsing input node to the string,that will
-     * later fill variables with xml datas.
-     * @param node Node for which will method be created
-     * @param str String to which will created method append
-     * @return String with appended method
+    /**Method getType returns type of node as string
+     *
+     * @param type input type in xsd:<T> format in string representation
+     * @return input type converted to Java-recognized type format, or Object, if type is not recognized
+     * @throws XPathExpressionException
      */
-    String createMethod(Node node,String str,String path) throws XPathExpressionException;
+    String getType(String type) throws XPathExpressionException;
+    
 }
