@@ -1,4 +1,4 @@
-#summary Final Statement
+#summary Project description and final Statement
 
 == Final Summary ==
 === Development organisation ===
